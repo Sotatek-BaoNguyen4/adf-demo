@@ -588,313 +588,123 @@ dart tool/gen_theme.dart
 
 ---
 
-## 7. Routing Architecture
+## 7. Routing & Shell Architecture
 
-### StatefulShellRoute (go_router)
+### StatefulShellRoute + Navigation Composition
+
+**5-Branch Indexed Stack** with per-branch back-stack preservation:
 
 ```dart
-// router.dart
-final router = GoRouter(
+GoRouter(
+  initialLocation: '/home',
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) {
-        return HomeShell(navigationShell: navigationShell);
-      },
+      builder: (context, state, navigationShell) =>
+          HomeShell(navigationShell: navigationShell),
       branches: [
-        // Branch 0: Home (wired)
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/home',
-              pageBuilder: (context, state) =>
-                  NoTransitionPage(child: HomeScreen()),
-            ),
-          ],
-        ),
-        // Branch 1: Explore (placeholder)
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/explore',
-              pageBuilder: (context, state) =>
-                  NoTransitionPage(child: PlaceholderTab()),
-            ),
-          ],
-        ),
-        // Branch 2: Tickets (placeholder)
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/tickets',
-              pageBuilder: (context, state) =>
-                  NoTransitionPage(child: TicketsScreen()),
-            ),
-          ],
-        ),
-        // Branch 3: Saved (placeholder)
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/saved',
-              pageBuilder: (context, state) =>
-                  NoTransitionPage(child: PlaceholderTab()),
-            ),
-          ],
-        ),
-        // Branch 4: Profile (placeholder)
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/profile',
-              pageBuilder: (context, state) =>
-                  NoTransitionPage(child: PlaceholderTab()),
-            ),
-          ],
-        ),
+        Branch 0: /home (HomeScreen — wired),
+        Branch 1: /explore (PlaceholderTab),
+        Branch 2: /tickets (TicketsScreen),
+        Branch 3: /saved (PlaceholderTab),
+        Branch 4: /profile (PlaceholderTab),
       ],
     ),
   ],
 );
 ```
 
-### Navigation Flow
+### HomeShell Layout & FAB Integration
+
+**HomeShell** (app/shell/home_shell.dart) — Scaffold that wraps all branches:
 
 ```
-App Launch
-  ↓
-GoRouter initial path: /home
-  ↓
-StatefulShellRoute.indexedStack
-  ├─ navigationShell.currentIndex = 0
-  └─ HomeShell(navigationShell)
-       ├─ Scaffold
-       ├─ body: HomeScreen() [Branch 0]
-       └─ bottomNavigationBar: CinemaNavBar(
-            onTap: (idx) => navigationShell.goBranch(idx)
-          )
-
-User taps Explore tab (index 1)
-  ↓
-CinemaNavBar.onTap(1)
-  ↓
-navigationShell.goBranch(1)
-  ↓
-StatefulShellRoute switches to Branch 1
-  ├─ navigationShell.currentIndex = 1
-  └─ HomeShell rebuilds
-       └─ body: PlaceholderTab() [Branch 1]
-           (Home state preserved in stack 0)
-
-User taps Home tab (index 0)
-  ↓
-navigationShell.goBranch(0)
-  ↓
-HomeScreen restores (state preserved)
+Scaffold(
+  body: navigationShell (IndexedStack; preserves per-branch state)
+  bottomNavigationBar: CinemaNavBar(
+    currentIndex: navigationShell.currentIndex,
+    onTap: (idx) → navigationShell.goBranch(idx)
+  )
+)
 ```
+
+**CinemaNavBar** (shared/widgets/cinema_nav_bar.dart) — Custom 5-destination nav with center FAB:
+
+```
+Bottom Navigation Bar (Material 3)
+├─ Slot 0: Home icon (ref.watch selected → goBranch(0))
+├─ Slot 1: Explore icon (goBranch(1))
+├─ Slot 2: [EMPTY — Reserved for FAB overlay]
+├─ Slot 3: Saved icon (goBranch(3))
+└─ Slot 4: Profile icon (goBranch(4))
+
+  ↑ (Stack overlay above)
+  └─ TicketsFabTile (core/navigation/tickets_fab_tile.dart)
+     ├─ Raised 56×56 FAB with gradient
+     ├─ Positioned at center over slot 2
+     ├─ Taps → context.go('/tickets')
+     └─ Stack(clipBehavior: Clip.none) allows overflow
+```
+
+**Back-Stack Behavior**: When user switches branches (e.g., Home → Explore → Home), the HomeScreen state is fully preserved (Riverpod providers still cached in memory). No re-init on return.
+
+Navigation tap flow: `CinemaNavBar.onTap()` → `navigationShell.goBranch(idx)` → `StatefulShellRoute` switches `IndexedStack` index → `HomeShell` rebuilds (body changes, nav bar updates `currentIndex`).
 
 ---
 
 ## 8. Network Mocking Strategy
 
-### MockInterceptor Flow
+**MockInterceptor** intercepts `/api/v1/*` requests and returns fixture JSON (500–1000ms latency):
 
-```
-App Start
-  ↓
-DioClient.dio.interceptors.add(MockInterceptor(...))
-  ↓
-User triggers data fetch
-  ↓
-Dio request: GET /api/v1/movies/now-showing?page=1&limit=10
-  ↓
-MockInterceptor.onRequest(request)
-  ├─ Check: matches /api/v1/* pattern?
-  │  └─ YES
-  ├─ Simulate latency (500–1000ms)
-  ├─ Load fixture: assets/fixtures/now-showing.json
-  ├─ Parse JSON → Map
-  └─ Return as fake response (status 200)
+1. Request: `GET /api/v1/movies/now-showing`
+2. MockInterceptor matches path → loads `assets/fixtures/now-showing.json`
+3. Returns 200 with parsed fixture data (as if from real API)
+4. DTO deserialization, cache write, entity mapping proceed normally
+5. **Fixture-to-API parity**: Schema must match contracts in `docs/project-fsd.md`
 
-Response flows back to home_remote_source
-  ↓
-DTO deserialization
-  ↓
-Stored in Hive cache
-  ↓
-Mapped to entities
-  ↓
-UI rendered
+**Backend Swap (Post-MVP)**: Set `--dart-define=USE_MOCK=false` → MockInterceptor disabled → requests hit real IMDB API. Same DTO/entity pipeline works unchanged.
+
+**Fixture Location**: `assets/fixtures/{now-showing,coming-soon,recommended,banners}.json` match request paths.
 
 ---
 
-Real Backend Swap (Post-MVP)
+## 9. Hive Storage & Bootstrap
 
---dart-define=USE_MOCK=false
-  ↓
-network_config.dart: if (!useMock) DioClient(real base URL)
-  ↓
-MockInterceptor not added
-  ↓
-Requests go directly to real IMDB API
-  ↓
-(Same DTO/entity/repo flow works unchanged)
-```
+**main.dart** calls `bootstrapHive()` before `ProviderScope`:
+1. Initializes Hive; registers TypeAdapters (via `hive_registrar.g.dart`)
+2. Opens 4 boxes: `banners`, `movies_now_showing`, `movies_coming_soon`, `movies_recommended`
+3. Each box stores `CacheEnvelope<List<T>>` with TTL metadata
 
-### Fixture Schema
-
-```json
-// assets/fixtures/now-showing.json
-[
-  {
-    "id": "1",
-    "title": "Inception",
-    "posterUrl": "https://image.tmdb.org/t/p/w342/r2j02Z2OpNTctfOSN1cZGMLITVA.jpg",
-    "rating": 8.8,
-    "status": "now-showing",
-    "releaseDate": "2026-01-15"
-  },
-  ...
-]
-```
-
----
-
-## 9. Hive Storage Setup
-
-### Bootstrap Sequence
-
-```dart
-// main.dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // 1. Initialize Hive
-  await bootstrapHive();
-  
-  // 2. Run app
-  runApp(ProviderScope(child: AdfCinemaApp()));
-}
-
-// hive_bootstrap.dart
-Future<void> bootstrapHive() async {
-  // 1. Get app documents directory
-  final dir = await getApplicationDocumentsDirectory();
-  Hive.defaultDir = dir.path;
-
-  // 2. Register TypeAdapters (generated)
-  Hive.registerAdapter(BannerDtoAdapter());
-  Hive.registerAdapter(MovieDtoAdapter());
-  Hive.registerAdapter(CacheEnvelopeAdapter());
-  // (all adapters via hive_registrar.g.dart)
-
-  // 3. Open boxes
-  await Hive.openBox<CacheEnvelope<List<BannerDto>>>('banners');
-  await Hive.openBox<CacheEnvelope<List<MovieDto>>>('movies_now_showing');
-  await Hive.openBox<CacheEnvelope<List<MovieDto>>>('movies_coming_soon');
-  await Hive.openBox<CacheEnvelope<List<MovieDto>>>('movies_recommended');
-}
-```
-
-### Box Schema
-
-| Box Name | Type | Content | TTL |
-|---|---|---|---|
-| `banners` | `CacheEnvelope<List<BannerDto>>` | Featured content | 60 min |
-| `movies_now_showing` | `CacheEnvelope<List<MovieDto>>` | Current releases | 30 min |
-| `movies_coming_soon` | `CacheEnvelope<List<MovieDto>>` | Upcoming releases | 2 hours |
-| `movies_recommended` | `CacheEnvelope<List<MovieDto>>` | Personalized | 24 hours |
-
----
-
-## 10. State Management (Riverpod)
-
-### Provider Lifecycle
-
-```
-App Start
-  ↓
-Provider not watched yet
-  ├─ build() not called
-  └─ Memory not allocated
-
-User navigates to Home Screen
-  ↓
-Widget calls ref.watch(bannersProvider)
-  ↓
-Provider.build() executes
-  ├─ Calls repo.getBanners()
-  ├─ Returns Future
-  └─ State = AsyncValue.loading
-
-Network fetch completes
-  ├─ State = AsyncValue.data([...])
-  ├─ UI rebuilds with data
-  └─ Provider maintains state in memory
-
-User navigates away
-  └─ If no other widgets watch it → still cached
-
-App pauses / resumes
-  ├─ Provider state persists (in RAM)
-  └─ No automatic refresh (explicit via invalidate or pull-to-refresh)
-
-User pulls to refresh
-  ├─ ref.invalidate(bannersProvider)
-  ├─ build() runs again
-  ├─ State = AsyncValue.loading
-  └─ (same flow as first load)
-
-App terminated
-  └─ Provider state lost (Hive cache persists across app restarts)
-```
-
-### Key Concepts
-
-| Concept | Usage | Example |
+| Box | Type | TTL |
 |---|---|---|
-| **@riverpod** | Mark provider function | `@riverpod Future<List<Banner>> banners(...) async { }` |
-| **.watch()** | Subscribe to provider (rebuild on change) | `ref.watch(bannersProvider)` |
-| **.read()** | Read provider once (no rebuild) | `ref.read(bannersProvider).maybeWhen(...)` |
-| **.invalidate()** | Force rebuild next access | `ref.invalidate(bannersProvider)` |
-| **AsyncValue** | Encodes loading/error/data state | `.when(loading: ..., error: ..., data: ...)` |
-| **select()** | Subscribe to filtered value (optimize rebuilds) | `ref.watch(moviesProvider.select((async) => ...))` |
+| `banners` | `CacheEnvelope<List<BannerDto>>` | 60 min |
+| `movies_now_showing` | `CacheEnvelope<List<MovieDto>>` | 30 min |
+| `movies_coming_soon` | `CacheEnvelope<List<MovieDto>>` | 2 hours |
+| `movies_recommended` | `CacheEnvelope<List<MovieDto>>` | 24 hours |
+
+**LocalCache** (core/storage/local_cache.dart) wraps Hive calls with typed read/write + error mapping.
 
 ---
 
-## 11. Integration Points
+## 10. State Management (Riverpod Codegen)
 
-### Data → UI Flow (Example: Now Showing)
+Providers fire on first `.watch()` (cold start) and persist in RAM until app terminates. Pull-to-refresh calls `ref.invalidate()` to force rebuild.
 
-```
-1. HomeScreen mounts
-   ├─ ref.watch(nowShowingMoviesProvider)
-   └─ AsyncValue<List<Movie>>
+| Operation | Result |
+|---|---|
+| `ref.watch(bannersProvider)` | Subscribe; rebuild on change; AsyncValue.{loading,error,data} |
+| `ref.read(repo)` | One-time read (no rebuild) |
+| `ref.invalidate(bannersProvider)` | Force provider rebuild next access |
+| `ref.watch(…select())` | Filtered watch; optimizes rebuilds |
 
-2. Provider subscribes to HomeRepository
-   ├─ repo.getMoviesNowShowing()
-   └─ Returns Future<List<Movie>>
+**Lifecycle**: build() → async fetch → AsyncValue.loading → network/cache complete → AsyncValue.data/error → UI rebuilds. State persists in RAM; Hive cache survives app restart.
 
-3. Repository orchestrates:
-   ├─ Check cache TTL (LocalSource)
-   ├─ If fresh: return cached
-   ├─ If stale: fetch + update cache
-   └─ Throws Failure on error
+---
 
-4. Remote/Local sources:
-   ├─ RemoteSource: Dio + MockInterceptor
-   ├─ LocalSource: Hive + CachePolicy
-   └─ Both map exceptions to Failure
+## 11. Data → UI Flow (Example)
 
-5. Provider resolves:
-   ├─ AsyncValue.loading → UI shows shimmer
-   ├─ AsyncValue.data → UI shows movie list
-   └─ AsyncValue.error → UI shows error view
+HomeScreen → ref.watch(nowShowingProvider) → HomeRepositoryImpl (SWR: cache TTL check → remote fetch/cache write) → RemoteSource (Dio + MockInterceptor) → DTO deserialize + map to entity → AsyncValue.data → UI renders via .when() → theme tokens applied.
 
-6. Widget renders:
-   ├─ NowShowingRail(movies: movieList)
-   ├─ MovieCard(movie: movie)
-   └─ All using theme tokens for styling
-```
+On error: Repository throws Failure → AsyncValue.error → UI shows ErrorView with retry.
 
 ---
 

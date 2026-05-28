@@ -15,13 +15,13 @@
 
 | ID | Requirement | Priority | Status |
 |----|------------|----------|--------|
-| FR-HOME-001 | Display a carousel banner of advertisements/featured content using Mocking from IMDB | High | Draft |
-| FR-HOME-002 | Fetch and display a list of "Now Showing" movies using Mocking from IMDB | High | Draft |
-| FR-HOME-003 | Fetch and display a list of "Coming Soon" movies using Mocking from IMDB | High | Draft |
-| FR-HOME-004 | Fetch and display a list of "Recommended" movies using Mocking from IMDB | High | Draft |
-| FR-HOME-005 | Display a bottom navigation bar with Home, Search, Cinemas, Community, Profile | High | Draft |
+| FR-HOME-001 | Display a carousel banner of advertisements/featured content using Mocking from IMDB | High | Complete |
+| FR-HOME-002 | Fetch and display a list of "Now Showing" movies using Mocking from IMDB | High | Complete |
+| FR-HOME-003 | Fetch and display a list of "Coming Soon" movies using Mocking from IMDB | High | Complete |
+| FR-HOME-004 | Fetch and display a list of "Recommended" movies using Mocking from IMDB | High | Complete |
+| FR-HOME-005 | Display a bottom navigation bar with Home, Search, Cinemas, Community, Profile | High | Complete |
 
-**Use Case References**: [docs/usecases/home/](../../../docs/usecases/home/)
+**Use Case References**: [docs/usecases/home/](usecases/home/)
 
 ---
 
@@ -32,16 +32,16 @@ Each AC follows Given/When/Then. All ACs trace back to a functional requirement 
 | AC ID | FR | Scenario (Given / When / Then) | Linked UC |
 |-------|-----|--------------------------------|-----------|
 | AC-HOME-001-01 | FR-HOME-001 | Given the user opens Home with an active network connection / When `GET /api/v1/home/banners` responds `200` with ≥1 banner / Then the carousel renders the first banner within 500ms of response | UC-HOME-001 |
-| AC-HOME-001-02 | FR-HOME-001 | Given the banner carousel is displayed with ≥2 banners / When 4 seconds elapse without user interaction / Then the carousel auto-advances to the next banner (BR-001) | UC-HOME-001 |
-| AC-HOME-001-03 | FR-HOME-001 | Given the carousel is auto-rotating / When the user performs a horizontal swipe / Then auto-rotation halts immediately and resumes only after 4 seconds of inactivity | UC-HOME-001 |
+| AC-HOME-001-02 | FR-HOME-001 | Given the banner carousel is displayed with ≥2 banners / When 5 seconds elapse without user interaction / Then the carousel auto-advances to the next banner (BR-001) | UC-HOME-001 |
+| AC-HOME-001-03 | FR-HOME-001 | Given the carousel is auto-rotating / When the user performs a horizontal swipe / Then auto-rotation halts immediately and resumes only after 5 seconds of inactivity | UC-HOME-001 |
 | AC-HOME-001-04 | FR-HOME-001 | Given the banners endpoint returns `500` or is unreachable / When the Home screen loads / Then the banner area is replaced with a non-blocking placeholder and an inline retry affordance; the rest of Home continues to render | UC-HOME-001 |
 | AC-HOME-002-01 | FR-HOME-002 | Given the user opens Home / When `GET /api/v1/movies/now-showing?page=1&limit=10` returns `200` with paginated data / Then the "Now Showing" row renders up to 10 cards and exposes `meta.hasNext` for pagination on scroll-end | UC-HOME-001 |
 | AC-HOME-002-02 | FR-HOME-002 | Given the now-showing endpoint returns an empty `data` array / When the Home screen renders / Then the "Now Showing" section displays the "No movies available" placeholder (EF-2) | UC-HOME-001 |
 | AC-HOME-002-03 | FR-HOME-002 | Given a previously cached now-showing payload exists (BR-002) / When the network is unavailable / Then the cached list is rendered with a subtle "offline" indicator instead of an error | UC-HOME-001 |
 | AC-HOME-003-01 | FR-HOME-003 | Given the user opens Home / When `GET /api/v1/movies/coming-soon` returns `200` / Then the "Coming Soon" row renders movie cards with `expectedReleaseDate` formatted in the device locale | UC-HOME-001 |
 | AC-HOME-003-02 | FR-HOME-003 | Given the coming-soon endpoint returns an empty `data` array / When the Home screen renders / Then the "Coming Soon" section is hidden or shows the "No movies available" placeholder | UC-HOME-001 |
-| AC-HOME-004-01 | FR-HOME-004 | Given an authenticated user with a valid Bearer JWT / When `GET /api/v1/movies/recommended` returns `200` / Then the "Recommended" row renders cards sorted by `matchPercentage` descending | UC-HOME-001 |
-| AC-HOME-004-02 | FR-HOME-004 | Given the user is unauthenticated or the token is expired / When the recommended endpoint returns `401` / Then the "Recommended" section is hidden from Home (no error toast) | UC-HOME-001 |
+| AC-HOME-004-01 | FR-HOME-004 | Given the user opens Home / When `GET /api/v1/movies/recommended` returns `200` (public endpoint) / Then the "Recommended" row renders cards sorted by `matchPercentage` descending | UC-HOME-001 |
+| AC-HOME-004-02 | FR-HOME-004 | Given the recommended endpoint is called / When the response returns `200` with data / Then cards display with rating and matchPercentage | UC-HOME-001 |
 | AC-HOME-004-03 | FR-HOME-004 | Given an authenticated user with no recommendations / When the endpoint returns `200` with empty `data` / Then the "Recommended" section is hidden | UC-HOME-001 |
 | AC-HOME-005-01 | FR-HOME-005 | Given the user is on Home with the Home tab active / When the user taps another tab (Search, Cinemas, Community, Profile) / Then the target tab becomes active, its screen renders, and the previously active tab returns to inactive state | UC-HOME-001 |
 | AC-HOME-005-02 | FR-HOME-005 | Given a deep link targeting `/profile` / When the app is launched cold via the link / Then the Profile tab is rendered as active in the bottom navigation bar | UC-HOME-001 |
@@ -266,10 +266,9 @@ List endpoints share a common pagination envelope:
 
 - **Method**: `GET`
 - **Path**: `/api/v1/movies/recommended`
-- **Auth**: Bearer JWT (required)
+- **Auth**: Public (no authentication required)
 - **Required Headers**:
   - `Accept: application/json`
-  - `Authorization: Bearer <jwt>`
   - `Accept-Language: <BCP-47>` (optional)
 - **Query Params**:
 
@@ -279,8 +278,8 @@ List endpoints share a common pagination envelope:
 | limit | integer | No | 10 | 1..50 |
 
 - **Request Body**: None
-- **Caching**: `Cache-Control: private, max-age=120`; per-user, must not be shared across users
-- **Rate Limit**: 120 req/min per authenticated user
+- **Caching**: `Cache-Control: public, max-age=1440`; can be cached globally (24h TTL per code)
+- **Rate Limit**: 60 req/min per IP
 
 **Response `200 OK`**
 
@@ -313,7 +312,6 @@ List endpoints share a common pagination envelope:
 | Status | When | Example `error.code` |
 |--------|------|----------------------|
 | 400 | Invalid `page` or `limit` | `VALIDATION_ERROR` |
-| 401 | Missing/expired/invalid JWT | `UNAUTHENTICATED` |
 | 429 | Rate limit exceeded | `RATE_LIMITED` |
 | 500 | Upstream/IMDB mock failure | `INTERNAL_ERROR` |
 
@@ -340,7 +338,7 @@ List endpoints share a common pagination envelope:
 
 | ID | Rule | Applies To | Enforcement |
 |----|------|-----------|-------------|
-| BR-001 | Banners must auto-rotate every 4 seconds | Home Carousel | Client |
+| BR-001 | Banners must auto-rotate every 5 seconds | Home Carousel | Client |
 | BR-002 | "Now Showing", "Coming Soon", and "Recommended" should be cached locally | Home Lists | Client |
 
 ## 8. Non-Functional Requirements
@@ -348,4 +346,5 @@ List endpoints share a common pagination envelope:
 | Category | Requirement | Target |
 |----------|------------|--------|
 | Performance | Home screen should load cached data within 500ms | < 500ms |
+| Banner Rotation | Auto-rotate interval | 5 seconds |
 | Availability | API should gracefully handle IMDB mocking failures | 99.9% |

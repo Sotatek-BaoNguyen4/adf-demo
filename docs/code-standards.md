@@ -698,6 +698,27 @@ fvm flutter test
 - **False positives**: Document in `analysis_options.yaml` `exclude:` only if unavoidable
 - **CI/CD enforcement**: GitHub Actions runs `flutter analyze` on PR
 
+### Quality Gates Integration
+
+**`.quality-gates/config.yaml`** — Enforces code standards via automated gates:
+
+| Gate | Purpose | Threshold |
+|---|---|---|
+| **Secrets (gitleaks)** | Prevent API keys, credentials from committing | Zero leaks |
+| **SAST (semgrep)** | Static analysis for security/quality issues | Zero issues |
+| **Dependencies (trivy)** | Scan for vulnerable package versions | No high/critical CVEs |
+| **Coverage** | Ensure sufficient test coverage | ≥70% (home feature: ≥80%) |
+| **File Size** | Enforce <200 LOC per file | Max 200 LOC |
+
+**Excluded from scanning**: `*.freezed.dart`, `*.g.dart`, `hive_registrar.g.dart`, `lib/core/theme/generated/*` (auto-generated).
+
+**Run locally**:
+```bash
+# Install quality-gates CLI (if not in CI)
+# Runs all enabled gates
+quality-gates check
+```
+
 ---
 
 ## 9. Git & Commits

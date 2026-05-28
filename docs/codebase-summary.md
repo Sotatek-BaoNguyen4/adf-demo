@@ -250,12 +250,15 @@ Core (Shared Infrastructure)
     │  ├─ extensions/*.dart
     │  └─ generated/*.dart
     ├─ core/navigation/
-    │  └─ tickets_fab_tile.dart
-    └─ shared/widgets/
-       └─ cinema_nav_bar.dart
+    │  └─ tickets_fab_tile.dart ←─────────┐
+    └─ shared/widgets/                    │
+       └─ cinema_nav_bar.dart ────────────┘ FAB delegation pattern:
+                                             nav bar reserves slot 2 for FAB overlay
 ```
 
 **Flow**: Presentation → Domain ← Data → Core.
+
+**Navigation Composition**: `app/shell/home_shell.dart` wraps `StatefulNavigationShell` (5 branches) in Scaffold with `CinemaNavBar` bottomNavigationBar. CinemaNavBar delegates center FAB tap to `TicketsFabTile` (Stack overlay); both consume AppTheme tokens.
 
 ---
 
@@ -328,32 +331,29 @@ dart tool/gen_theme.dart
 ```
 test/
 ├── _helpers/
-│   └── widget_test_harness.dart       # ProviderScope + MaterialApp wrapper
-├── core/
-│   └── navigation/
-│       └── tickets_fab_tile_test.dart  # Tests FAB visibility + layout
-├── features/
-│   └── home/
-│       ├── widgets/
-│       │   ├── banner_carousel_test.dart
-│       │   ├── banner_carousel_overlay_test.dart
-│       │   ├── story_progress_indicator_test.dart
-│       │   ├── category_chips_bar_test.dart
-│       │   ├── coming_soon_card_test.dart
-│       │   ├── home_top_app_bar_test.dart
-│       │   ├── now_showing_card_test.dart
-│       │   ├── promo_banner_test.dart
-│       │   ├── trending_list_test.dart
-│       │   └── trending_list_row_test.dart
-│       └── (unit tests)
-│           ├── home_remote_source_test.dart
-│           └── home_repository_impl_test.dart
+│   └── widget_test_harness.dart                    # ProviderScope + MaterialApp wrapper
+├── core/navigation/
+│   └── tickets_fab_tile_test.dart                  # FAB visibility + layout
+├── features/home/widgets/
+│   ├── banner_overlay_content_test.dart
+│   ├── banner_section_error_test.dart
+│   ├── banner_section_test.dart
+│   ├── banner_section_timer_reset_test.dart
+│   ├── banner_story_progress_test.dart
+│   ├── category_chips_bar_test.dart
+│   ├── coming_soon_card_test.dart
+│   ├── home_screen_sections_test.dart
+│   ├── home_top_app_bar_test.dart
+│   ├── now_showing_card_test.dart
+│   ├── promo_banner_test.dart
+│   ├── trending_list_row_test.dart
+│   └── trending_list_test.dart
+└── unit/
+    ├── home_remote_source_test.dart
+    └── home_repository_impl_test.dart
 ```
 
-**Testing Strategy**:
-- Widget tests use `WidgetTestHarness` (wraps with Riverpod + theme)
-- Unit tests mock sources with `mocktail`
-- Coverage target: >80% for home feature
+**Testing Strategy**: Widget tests use `WidgetTestHarness`; unit tests mock with `mocktail`; coverage target: >80% home feature.
 
 ---
 
@@ -385,6 +385,31 @@ assets/
 | `docs/design-system/tokens.json` | All design tokens (colors, spacing, typography, motion) |
 
 **Toggling Mock**: `fvm flutter run --dart-define=USE_MOCK=false` (defaults to true).
+
+---
+
+## 8.1 Build Tools & Configuration
+
+### Quality Gates Integration
+- **`.quality-gates/config.yaml`** — SAST (semgrep), secrets (gitleaks), deps (trivy), coverage (70%), file size (200 LOC max)
+- **`.quality-gates/gitleaks.toml`** — Secrets scanning rules (symlink from repo root as `.gitleaks.toml`)
+- **Enabled gates**: secrets, deps, sast, coverage, file-size
+- **Excluded**: All generated files (`*.g.dart`, `*.freezed.dart`, `lib/core/theme/generated/`)
+
+### Code Generation
+- **`tool/gen_theme.dart`** — Reads `docs/design-system/tokens.json` → outputs `lib/core/theme/generated/{color,spacing,radius,typography,motion}_tokens.dart`
+- **Pubspec key sections**:
+  - `build_runner`, `freezed`, `riverpod_generator` in dev_dependencies
+  - `riverpod`, `freezed_annotation`, `hive`, `hive_flutter` in dependencies
+  - `build: generate_build_yaml: true` for Hive codegen
+
+### Key Commands
+```bash
+dart run build_runner build --delete-conflicting-outputs  # Full codegen
+dart tool/gen_theme.dart                                  # Theme tokens only
+fvm flutter analyze                                       # Code analysis
+fvm flutter test                                          # Run tests
+```
 
 ---
 

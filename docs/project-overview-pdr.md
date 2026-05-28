@@ -127,6 +127,7 @@ Build a **mobile-first movie discovery platform** that empowers Gen-Z users to e
 | **Riverpod provider leaks** | Low | Memory leak in async notifiers | Test harness validates disposal; code review checks `.watch()` lifecycle |
 | **Network timeout** | Medium | User stuck on loading spinner | TimeoutFailure mapped; UI shows "Failed to load, pull to refresh" |
 | **Hive corruption** | Low | App crashes on box read | CacheEnvelope versioning + try-catch in LocalCache |
+| **Quality gates misconfiguration** | Low | Gate rules block valid commits; false positives | Update `.quality-gates/config.yaml` scope exclusions as needed |
 
 ---
 
@@ -195,6 +196,7 @@ See [docs/system-architecture.md](system-architecture.md) for detailed diagrams 
 | **Codebase Summary** | ✅ Done | `docs/codebase-summary.md` |
 | **Deployment Guide** | ✅ Done | `docs/deployment-guide.md` |
 | **Project Roadmap** | ✅ Done | `docs/project-roadmap.md` |
+| **Quality Gates Infrastructure** | ✅ Done | `.quality-gates/config.yaml`, `.quality-gates/gitleaks.toml` |
 
 ---
 
