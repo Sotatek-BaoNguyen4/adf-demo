@@ -661,12 +661,26 @@ void main() {
 }
 ```
 
+### Integration Tests
+
+**Location**: `integration_test/` — device/emulator-only tests.
+
+**Scope**: User flows (banner swipe, movie rail swipe, navigation); requires running device or emulator.
+
+**NOT run in CI by default** (no emulator available in GitHub Actions). Run locally:
+```bash
+fvm flutter test integration_test/banner_section_swipe_test.dart -d <device-id>
+fvm flutter test integration_test/movie_rail_swipe_test.dart -d <device-id>
+```
+
+**Coverage**: Unit + widget tests target >80% coverage in CI; integration tests verify E2E flows manually.
+
 ### Coverage Target
 
 - **Home feature**: >80% (screen, providers, widgets, data)
 - **Core network**: >75% (Dio client, mock interceptor)
 - **Core storage**: >75% (Hive bootstrap, LocalCache)
-- **Overall**: >70%
+- **Overall**: >70% (floor enforced in CI: 62%, ratchet target: 80%)
 
 **Run coverage**:
 ```bash

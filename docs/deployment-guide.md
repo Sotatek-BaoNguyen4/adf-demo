@@ -429,49 +429,53 @@ fvm devtools
 
 ---
 
-## 8. CI/CD Integration
+## 8. CI/CD Pipeline
 
-### GitHub Actions (Example)
+### Active Pipeline
 
-**File**: `.github/workflows/build.yml`
+**File**: `.github/workflows/ci.yml`
 
-```yaml
-name: Build & Test
+#### Triggers
+- Push to `master` branch
+- Pull requests to `master`
 
-on: [push, pull_request]
+#### Jobs
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.10.x'
-      
-      - name: Get dependencies
-        run: flutter pub get
-      
-      - name: Generate code
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-      
-      - name: Run tests
-        run: flutter test
-      
-      - name: Analyze
-        run: flutter analyze
-      
-      - name: Build APK (mock)
-        run: flutter build apk --release --dart-define=USE_MOCK=true
-      
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release.apk
-          path: build/app/outputs/apk/release/
-```
+**test+coverage**
+- Runs `fvm flutter test --coverage`
+- Reports coverage % → GitHub summary
+- Enforces floor: **62%** (current ratchet)
+- Target: **80%** (home feature)
+- Publishes coverage artifacts
+
+**quality-gates**
+- Secrets scan (gitleaks)
+- SAST analysis (semgrep)
+- Dependency vulns (trivy)
+- Coverage ≥70% enforced
+- File size ≤200 LOC enforced
+
+**build**
+- Code generation + analysis
+- APK release build (mock mode: `USE_MOCK=true`)
+- Artifact upload: `app-release.apk`
+
+#### Reading Output
+
+1. **Coverage Mismatch**: If test fails on coverage, check:
+   - Run logs → coverage % reported
+   - If <62%, new tests must raise floor via `.quality-gates/config.yaml`
+   - Ratchet increments automatically on successful run
+
+2. **SAST Issues**: semgrep reports violations → fix in code, re-push
+
+3. **Secrets Detected**: gitleaks blocks merge → remove from commit, amend
+
+---
+
+### Legacy Example (Deprecated)
+
+**Kept for reference only; use .github/workflows/ci.yml instead.**
 
 ---
 

@@ -8,6 +8,14 @@
 ## 1. Directory Structure
 
 ```
+root/
+├── .github/workflows/
+│   └── ci.yml                         # CI pipeline: test+coverage, quality-gates, build APK
+├── integration_test/
+│   ├── banner_section_swipe_test.dart # Device-only: banner carousel swipe
+│   ├── movie_rail_swipe_test.dart     # Device-only: movie rail swipe
+│   └── ...
+
 lib/
 ├── main.dart                           # App entry point (12 LOC)
 ├── hive_registrar.g.dart              # Generated: Hive TypeAdapter registry
@@ -107,6 +115,16 @@ lib/
 ---
 
 ## 2. Module Responsibilities
+
+### `.github/workflows/ci.yml` — CI Pipeline
+- **Triggers**: Push/PR to master
+- **Jobs**: test+coverage (floor 62%, target 80%), quality-gates (secrets/SAST/deps/coverage/file-size), build APK
+- **No integration tests in CI** (device-only; run locally in `integration_test/`)
+
+### `integration_test/` — Device/Emulator Tests
+- `banner_section_swipe_test.dart` — Carousel swipe interactions (requires device)
+- `movie_rail_swipe_test.dart` — Rail scroll interactions (requires device)
+- Not run in CI; execute locally: `fvm flutter test integration_test/{test}.dart -d <device-id>`
 
 ### `main.dart` — App Bootstrap
 - Initializes Hive boxes via `bootstrapHive()`
