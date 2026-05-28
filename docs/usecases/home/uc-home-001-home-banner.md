@@ -3,7 +3,7 @@
 **Module**: Home
 **Actor**: User
 **Priority**: High
-**Last Updated**: 2026-05-27
+**Last Updated**: 2026-05-28
 
 ## Precondition
 
@@ -52,3 +52,22 @@
 
 - BR-001: Banners must auto-rotate every 5 seconds
 - BR-002: "Now Showing", "Coming Soon", and "Recommended" should be cached locally
+
+## Acceptance Criteria
+
+Detailed Given/When/Then scenarios are defined in [FSD §2 Acceptance Criteria](../../project-fsd.md#2-acceptance-criteria). Summary:
+
+- AC-HOME-001-01 — Banners render within 500ms on `200` response (FR-HOME-001)
+- AC-HOME-001-02 — Carousel auto-advances every 5s (FR-HOME-001, BR-001)
+- AC-HOME-001-03 — Manual swipe halts auto-rotation; resumes after 5s idle (FR-HOME-001)
+- AC-HOME-001-04 — Banner API `500` shows non-blocking placeholder with retry (FR-HOME-001)
+- AC-HOME-002-01 — Now-showing renders paginated list with `meta.hasNext` (FR-HOME-002)
+- AC-HOME-002-02 — Empty now-showing data shows "No movies available" (FR-HOME-002)
+- AC-HOME-002-03 — Offline falls back to cached now-showing payload (FR-HOME-002, BR-002)
+- AC-HOME-003-01 — Coming-soon renders cards with locale-formatted `expectedReleaseDate` (FR-HOME-003)
+- AC-HOME-003-02 — Empty coming-soon data hides section or shows placeholder (FR-HOME-003)
+- AC-HOME-004-01 — Authenticated `200` renders recommended sorted by `matchPercentage` desc (FR-HOME-004)
+- AC-HOME-004-02 — `401` from recommended endpoint hides the section (FR-HOME-004)
+- AC-HOME-004-03 — Empty recommended data hides the section (FR-HOME-004)
+- AC-HOME-005-01 — Tab tap switches active state and renders target screen (FR-HOME-005)
+- AC-HOME-005-02 — Deep link preserves target tab as active on cold start (FR-HOME-005)
