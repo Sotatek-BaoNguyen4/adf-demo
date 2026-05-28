@@ -350,6 +350,112 @@ final class UnknownFailure extends Failure {
 | Asset missing | `FixtureMissingFailure` | Fixture JSON not found |
 | `Exception` (other) | `UnknownFailure` | Unclassified / unexpected |
 
+### Error Propagation Sequence Diagrams
+
+The diagrams below show how errors flow from their origin (network/cache/parse) through the repository (where mapping to `Failure` happens) up to the UI (which receives `AsyncValue.error`). Layer-internal details (Dio interceptors, Hive box mechanics, fixture loading) live in [LLD § 7.4](./lld-home-mvp.md).
+
+#### 5.1 Network 5xx / 4xx → `NetworkFailure`
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as HomeScreen
+    participant P as Provider (AsyncValue)
+    participant R as HomeRepository
+    participant N as Network (Dio)
+    participant C as LocalCache (Hive)
+
+    UI->>P: ref.watch(moviesProvider)
+    P->>R: getMovies()
+    R->>C: read(key)
+    C-->>R: null OR stale envelope
+    R->>N: GET /api/v1/movies/*
+    N-->>R: DioException(statusCode: 5xx)
+    R->>R: map → NetworkFailure(statusCode)
+    alt stale envelope exists
+        Note over R: serve-stale-on-error
+        R-->>P: stale payload
+        P-->>UI: AsyncData(movies) + "outdated" badge
+    else no cache
+        R-->>P: throw NetworkFailure
+        P-->>UI: AsyncError(NetworkFailure)
+        UI->>UI: render ErrorView("Failed to load — Retry")
+    end
+```
+
+#### 5.2 Request Timeout → `TimeoutFailure`
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as HomeScreen
+    participant P as Provider (AsyncValue)
+    participant R as HomeRepository
+    participant N as Network (Dio)
+    participant C as LocalCache (Hive)
+
+    UI->>P: ref.watch(moviesProvider)
+    P->>R: getMovies()
+    R->>C: read(key)
+    C-->>R: null (cache miss)
+    R->>N: GET /api/v1/movies/*
+    Note over N: connectTimeout / receiveTimeout exceeded
+    N-->>R: DioException(type: timeout)
+    R->>R: map → TimeoutFailure
+    R-->>P: throw TimeoutFailure
+    P-->>UI: AsyncError(TimeoutFailure)
+    UI->>UI: render ErrorView(icon: cloud_off, "Network timeout")
+```
+
+#### 5.3 Malformed JSON → `ParseFailure`
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as HomeScreen
+    participant P as Provider (AsyncValue)
+    participant R as HomeRepository
+    participant N as Network (Dio)
+
+    UI->>P: ref.watch(moviesProvider)
+    P->>R: getMovies()
+    R->>N: GET /api/v1/movies/*
+    N-->>R: 200 OK with malformed body
+    R->>R: jsonDecode / DTO.fromJson
+    Note over R: FormatException or TypeError thrown
+    R->>R: map → ParseFailure(path)
+    R-->>P: throw ParseFailure
+    P-->>UI: AsyncError(ParseFailure)
+    UI->>UI: render ErrorView("Unexpected error — Retry")
+```
+
+#### 5.4 Cache Read/Write Error → `CacheReadFailure` / `CacheWriteFailure`
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as HomeScreen
+    participant P as Provider (AsyncValue)
+    participant R as HomeRepository
+    participant C as LocalCache (Hive)
+    participant N as Network (Dio)
+
+    UI->>P: ref.watch(moviesProvider)
+    P->>R: getMovies()
+    R->>C: read(key)
+    C-->>R: HiveError (corrupt box / IO)
+    R->>R: map → CacheReadFailure (swallowed — fall through)
+    Note over R: cache errors never block reads — proceed to network
+    R->>N: GET /api/v1/movies/*
+    N-->>R: 200 OK
+    R->>C: write(envelope)
+    C-->>R: HiveError
+    R->>R: map → CacheWriteFailure (logged, not thrown)
+    Note over R: write errors are non-fatal — fresh data still returned
+    R-->>P: fresh payload
+    P-->>UI: AsyncData(movies)
+```
+
 ### UI Error Handling Pattern
 
 ```dart
