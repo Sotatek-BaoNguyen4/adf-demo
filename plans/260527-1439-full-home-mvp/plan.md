@@ -26,13 +26,13 @@ End-to-end build of the ADF Cinema Home screen MVP: banner carousel, three movie
 
 | # | Phase | Status | Effort | Depends on |
 |---|---|---|---|---|
-| 01 | [Project bootstrap](./phase-01-bootstrap.md) — pubspec deps, folder skeleton, lints, build_runner | pending | S | — |
-| 02 | [Theme codegen + core/theme](./phase-02-theme.md) — tokens.json → Dart, M3 ColorScheme/TextTheme, dark+light builders | pending | M | 01 |
-| 03 | [core/network + core/storage](./phase-03-core-network-storage.md) — Dio, MockInterceptor, Hive bootstrap, CachePolicy, Failure | pending | M | 01 |
-| 04 | [Home data + domain](./phase-04-home-data.md) — entities, DTOs (freezed/json), HomeRepository impl, sources, fixtures JSON | pending | M | 03 |
-| 05 | [Home presentation](./phase-05-home-presentation.md) — providers, HomeScreen, BannerCarousel, MovieRail, MovieCard, shimmer/empty/error states | pending | L | 02, 04 |
-| 06 | [Router + bottom-nav shell](./phase-06-router-shell.md) — go_router StatefulShellRoute, 5 tabs, placeholders, ProviderScope+MaterialApp.router | pending | S | 05 |
-| 07 | [Tests](./phase-07-tests.md) — unit (LLD §9) + widget (HomeScreen states, carousel rotate, refresh) | pending | M | 06 |
+| 01 | [Project bootstrap](./phase-01-bootstrap.md) — pubspec deps, folder skeleton, lints, build_runner | ✅ Complete | S | — |
+| 02 | [Theme codegen + core/theme](./phase-02-theme.md) — tokens.json → Dart, M3 ColorScheme/TextTheme, dark+light builders | ✅ Complete | M | 01 |
+| 03 | [core/network + core/storage](./phase-03-core-network-storage.md) — Dio, MockInterceptor, Hive bootstrap, CachePolicy, Failure | ✅ Complete | M | 01 |
+| 04 | [Home data + domain](./phase-04-home-data.md) — entities, DTOs (freezed/json), HomeRepository impl, sources, fixtures JSON | ✅ Complete | M | 03 |
+| 05 | [Home presentation](./phase-05-home-presentation.md) — providers, HomeScreen, BannerCarousel, MovieRail, MovieCard, shimmer/empty/error states | ✅ Complete | L | 02, 04 |
+| 06 | [Router + bottom-nav shell](./phase-06-router-shell.md) — go_router StatefulShellRoute, 5 tabs, placeholders, ProviderScope+MaterialApp.router | ✅ Complete | S | 05 |
+| 07 | [Tests](./phase-07-tests.md) — unit (LLD §9) + widget (HomeScreen states, carousel rotate, refresh) | ✅ Complete | M | 06 |
 
 ## Critical Path
 01 → 02 + 03 (parallel) → 04 → 05 → 06 → 07. Phases 02 and 03 are independent and may run in parallel.
@@ -68,6 +68,10 @@ End-to-end build of the ADF Cinema Home screen MVP: banner carousel, three movie
 - Hive CE adapter codegen friction → mitigated by keeping DTOs flat
 - Theme codegen drift vs tokens.json → run `dart tool/gen_theme.dart` in pre-commit
 - File-size creep > 200 LOC → strict per-component budgets in phase files
+
+## Status Reconciliation (2026-05-28)
+
+**Note:** This plan contains 59 stale phase-file TODOs that no longer match shipped code. Do NOT delete — see details in `plans/reports/plan-audit-hard-260528-1916.md`. All phases marked ✅ Complete reflect actual codebase state as of session end.
 
 ## Open Questions
 - See LLD §12 (carry-overs): pagination in MockInterceptor (deferred), cache_stats debug screen (backlog), stale-fallback UX badge (deferred to features/home).

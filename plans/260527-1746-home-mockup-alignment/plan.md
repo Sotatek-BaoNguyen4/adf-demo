@@ -1,12 +1,13 @@
 ---
 title: "Home Screen Mockup Alignment"
 description: "Close visual + feature gaps between MVP Home screen and the design mockup (top bar, banner overlay, story progress, category chips, trending list, promo, date cards, nav)."
-status: pending
+status: complete
 priority: P1
 effort: 14h
 branch: master
 tags: [flutter, home, ui, theme, design-alignment]
 created: 2026-05-27
+completed: 2026-05-28
 ---
 
 # Plan — Home Mockup Alignment
@@ -35,11 +36,11 @@ Brings the Flutter Home screen in line with the design source-of-truth: `docs/de
 
 | # | Phase | Status | Effort | Depends on |
 |---|---|---|---|---|
-| 01 | [Data model + provider extensions](./phase-01-data-model-and-providers.md) — `rank`/`views` on Movie, rename `recommended`→`trending`, fixtures, optional `releaseDate` carry-through | pending | M | — |
-| 02 | [Top app bar + banner overlay + story progress](./phase-02-app-bar-and-banner-overlay.md) — new home shell layout, banner overlay widget, story progress bars | pending | L | 01 |
-| 03 | [Category chips + promo banner](./phase-03-category-chips-and-promo-banner.md) — `CategoryChipsBar` widget + `PromoBanner` widget, slot into HomeScreen | pending | M | 01 |
-| 04 | [Trending list + coming-soon date card + now-showing layout fix](./phase-04-list-and-card-variants.md) — `TrendingList`, `ComingSoonCard`, `NowShowingCard` (replaces generic `MovieCard` for these two sections) | pending | L | 01 |
-| 05 | [Bottom-nav alignment + tests](./phase-05-nav-alignment-and-tests.md) — rename branches to Home/Explore/Tickets/Saved/Profile, raised FAB tile for Tickets, widget tests covering new sections | pending | M | 02, 03, 04 |
+| 01 | [Data model + provider extensions](./phase-01-data-model-and-providers.md) — `rank`/`views` on Movie, rename `recommended`→`trending`, fixtures, optional `releaseDate` carry-through | ✅ Complete | M | — |
+| 02 | [Top app bar + banner overlay + story progress](./phase-02-app-bar-and-banner-overlay.md) — new home shell layout, banner overlay widget, story progress bars | ✅ Complete | L | 01 |
+| 03 | [Category chips + promo banner](./phase-03-category-chips-and-promo-banner.md) — `CategoryChipsBar` widget + `PromoBanner` widget, slot into HomeScreen | ✅ Complete | M | 01 |
+| 04 | [Trending list + coming-soon date card + now-showing layout fix](./phase-04-list-and-card-variants.md) — `TrendingList`, `ComingSoonCard`, `NowShowingCard` (replaces generic `MovieCard` for these two sections) | ✅ Complete | L | 01 |
+| 05 | [Bottom-nav alignment + tests](./phase-05-nav-alignment-and-tests.md) — rename branches to Home/Explore/Tickets/Saved/Profile, raised FAB tile for Tickets, widget tests covering new sections | ✅ Complete | M | 02, 03, 04 |
 
 ## Critical Path
 01 → (02 + 03 + 04 in parallel; 02 owns banner files, 03 owns chips/promo, 04 owns card+list) → 05. Phase 02–04 are safe to parallelise because file ownership is disjoint per the lists in each phase file.
@@ -55,7 +56,10 @@ Brings the Flutter Home screen in line with the design source-of-truth: `docs/de
 - Gradient + ThemeExtension boilerplate: introduce `AppGradientsExt` once in phase 02, reuse in phase 03 + 04.
 - Bottom-nav rename may break deep-link routes (`/community`, `/cinemas`): phase 05 handles redirects.
 
+## Session Summary (2026-05-28)
+
+**Shipped:** All 5 phases complete. FSD navigation aligned (Search→Explore, Cinemas→Tickets, Community→Saved, + new AC-HOME-005-03). Component catalog expanded to 22 widgets. New swipe tests: banner_section_swipe_test.dart (3), movie_rail_swipe_test.dart (2), home_navigation_flow_test.dart (5 device-only). All pass. FAB finder corrected (TicketsFabTile). CI pipeline integrated.
+
 ## Open Questions
-- Confirm: should phase 05 actually align nav to mockup (Home/Explore/Tickets/Saved/Profile) or keep the current 5-branch shell? Plan assumes **align**.
-- "Tickets" raised FAB target: mockup links to `movie-detail.html` — keep as placeholder route `/tickets` for now?
-- Promo "Claim Now" CTA target: undefined in mockup — left as no-op for MVP.
+- "Tickets" raised FAB target: kept as placeholder route `/tickets` for MVP.
+- Promo "Claim Now" CTA target: left as no-op for MVP.

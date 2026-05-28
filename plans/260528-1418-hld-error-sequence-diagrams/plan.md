@@ -1,9 +1,10 @@
 # Plan: HLD — Add Missing Sequence Diagrams for Error Lines
 
 **Created:** 2026-05-28
-**Status:** Complete
+**Status:** ✅ Complete
 **Scope:** Docs-only (no code changes)
 **Target file:** `docs/system-architecture.md` § 5 (Failure Taxonomy & Error Mapping)
+**Completed:** 2026-05-28
 
 ## Problem
 
