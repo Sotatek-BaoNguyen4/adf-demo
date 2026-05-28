@@ -1,0 +1,134 @@
+// GENERATED FILE — do not edit by hand.
+// Re-generate: dart tool/gen_theme.dart
+// Color tokens — generated from themes/dark.json and themes/light.json
+// ignore_for_file: lines_longer_than_80_chars
+
+import 'package:flutter/painting.dart';
+
+// ignore_for_file: constant_identifier_names
+
+/// Dark theme color constants.
+abstract final class DarkColorTokens {
+  static const primary_default = Color(0xFFD0BCFF);
+  static const primary_on = Color(0xFF381E72);
+  static const primary_container = Color(0xFF4F378B);
+  static const primary_on_container = Color(0xFFEADDFF);
+  static const secondary_default = Color(0xFF67E8F9);
+  static const secondary_on = Color(0xFF003738);
+  static const secondary_container = Color(0xFF00565A);
+  static const secondary_on_container = Color(0xFFA2EFF8);
+  static const tertiary_default = Color(0xFFFDB97D);
+  static const tertiary_on = Color(0xFF4A2800);
+  static const tertiary_container = Color(0xFF6B3D00);
+  static const tertiary_on_container = Color(0xFFFFDCBE);
+  static const error_default = Color(0xFFFFB4AB);
+  static const error_on = Color(0xFF690005);
+  static const error_container = Color(0xFF93000A);
+  static const error_on_container = Color(0xFFFFDAD6);
+  static const surface_default = Color(0xFF0A0A0F);
+  static const surface_dim = Color(0xFF070B14);
+  static const surface_bright = Color(0xFF1A1A24);
+  static const surface_container_lowest = Color(0xFF050508);
+  static const surface_container_low = Color(0xFF13131A);
+  static const surface_container = Color(0xFF1A1A24);
+  static const surface_container_high = Color(0xFF212130);
+  static const surface_container_highest = Color(0xFF2D2D3D);
+  static const on_surface_default = Color(0xFFE6E1E5);
+  static const on_surface_variant = Color(0xFFCAC4D0);
+  static const outline_default = Color(0xFF938F99);
+  static const outline_variant = Color(0xFF49454F);
+  static const inverse_surface = Color(0xFFE6E1E5);
+  static const inverse_on_surface = Color(0xFF313033);
+  static const inverse_primary = Color(0xFF7C3AED);
+  static const scrim = Color(0xFF000000);
+  static const shadow = Color(0xFF000000);
+  static const background_app = Color(0xFF0A0A0F);
+  static const background_surface = Color(0xFF13131A);
+  static const background_elevated = Color(0xFF1A1A24);
+  static const background_overlay = Color(0x80000000);
+  static const text_primary = Color(0xFFE6E1E5);
+  static const text_secondary = Color(0xFFCAC4D0);
+  static const text_muted = Color(0xFF938F99);
+  static const text_inverse = Color(0xFF313033);
+  static const text_on_primary = Color(0xFF381E72);
+  static const border_default = Color(0xFF49454F);
+  static const border_focus = Color(0xFFD0BCFF);
+  static const border_strong = Color(0xFF938F99);
+  static const interactive_primary = Color(0xFFD0BCFF);
+  static const interactive_primary_hover = Color(0xFFE8DEF8);
+  static const interactive_primary_pressed = Color(0xFFB69DF8);
+  static const interactive_primary_disabled = Color(0x40D0BCFF);
+  static const interactive_secondary = Color(0xFF67E8F9);
+  static const interactive_secondary_hover = Color(0xFFA2EFF8);
+  static const interactive_destructive = Color(0xFFFFB4AB);
+  static const badge_now_showing = Color(0xFF4F378B);
+  static const badge_coming_soon = Color(0xFF00565A);
+  static const badge_rating = Color(0xFFFBBF24);
+  static const badge_new = Color(0xFF22C55E);
+  static const nav_background = Color(0xE613131A);
+  static const nav_active = Color(0xFFD0BCFF);
+  static const nav_inactive = Color(0xFF938F99);
+}
+
+/// Light theme color constants.
+abstract final class LightColorTokens {
+  static const primary_default = Color(0xFF6750A4);
+  static const primary_on = Color(0xFFFFFFFF);
+  static const primary_container = Color(0xFFEADDFF);
+  static const primary_on_container = Color(0xFF21005D);
+  static const secondary_default = Color(0xFF0891B2);
+  static const secondary_on = Color(0xFFFFFFFF);
+  static const secondary_container = Color(0xFFA2EFF8);
+  static const secondary_on_container = Color(0xFF001F24);
+  static const tertiary_default = Color(0xFFEA580C);
+  static const tertiary_on = Color(0xFFFFFFFF);
+  static const tertiary_container = Color(0xFFFFDCBE);
+  static const tertiary_on_container = Color(0xFF2D1600);
+  static const error_default = Color(0xFFB3261E);
+  static const error_on = Color(0xFFFFFFFF);
+  static const error_container = Color(0xFFF9DEDC);
+  static const error_on_container = Color(0xFF410E0B);
+  static const surface_default = Color(0xFFFAF5FF);
+  static const surface_dim = Color(0xFFE6DEF5);
+  static const surface_bright = Color(0xFFFAF5FF);
+  static const surface_container_lowest = Color(0xFFFFFFFF);
+  static const surface_container_low = Color(0xFFF5EEFF);
+  static const surface_container = Color(0xFFEDE7F6);
+  static const surface_container_high = Color(0xFFE8E0F0);
+  static const surface_container_highest = Color(0xFFE1D9EA);
+  static const on_surface_default = Color(0xFF1C1B1F);
+  static const on_surface_variant = Color(0xFF49454F);
+  static const outline_default = Color(0xFF79747E);
+  static const outline_variant = Color(0xFFCAC4D0);
+  static const inverse_surface = Color(0xFF313033);
+  static const inverse_on_surface = Color(0xFFF4EFF4);
+  static const inverse_primary = Color(0xFFD0BCFF);
+  static const scrim = Color(0xFF000000);
+  static const shadow = Color(0xFF000000);
+  static const background_app = Color(0xFFFAF5FF);
+  static const background_surface = Color(0xFFFFFFFF);
+  static const background_elevated = Color(0xFFF3E8FF);
+  static const background_overlay = Color(0x50000000);
+  static const text_primary = Color(0xFF1C1B1F);
+  static const text_secondary = Color(0xFF49454F);
+  static const text_muted = Color(0xFF79747E);
+  static const text_inverse = Color(0xFFF4EFF4);
+  static const text_on_primary = Color(0xFFFFFFFF);
+  static const border_default = Color(0xFFCAC4D0);
+  static const border_focus = Color(0xFF6750A4);
+  static const border_strong = Color(0xFF79747E);
+  static const interactive_primary = Color(0xFF6750A4);
+  static const interactive_primary_hover = Color(0xFF4F378B);
+  static const interactive_primary_pressed = Color(0xFF381E72);
+  static const interactive_primary_disabled = Color(0x406750A4);
+  static const interactive_secondary = Color(0xFF0891B2);
+  static const interactive_secondary_hover = Color(0xFF006A7A);
+  static const interactive_destructive = Color(0xFFB3261E);
+  static const badge_now_showing = Color(0xFF6750A4);
+  static const badge_coming_soon = Color(0xFF0891B2);
+  static const badge_rating = Color(0xFFD97706);
+  static const badge_new = Color(0xFF16A34A);
+  static const nav_background = Color(0xEEFFFFFF);
+  static const nav_active = Color(0xFF6750A4);
+  static const nav_inactive = Color(0xFF79747E);
+}
