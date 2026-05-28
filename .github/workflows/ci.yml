@@ -80,18 +80,13 @@ jobs:
           echo "pct=${pct}" >> "$GITHUB_OUTPUT"
           echo "Line coverage: ${pct}%"
 
-      - name: Enforce coverage ratchet (floor 62%, target 80%)
+      - name: Enforce coverage threshold (80%)
         run: |
           pct=${{ steps.coverage.outputs.pct }}
-          floor=62
-          target=80
-          # Hard block below floor (prevents regression)
-          awk -v p="$pct" -v t="$floor" 'BEGIN { if (p+0 < t+0) exit 1; exit 0 }' \
-            || { echo "::error::Coverage ${pct}% below floor ${floor}% — regression detected"; exit 1; }
-          # Warn between floor and target (informational)
-          awk -v p="$pct" -v t="$target" 'BEGIN { if (p+0 < t+0) exit 1; exit 0 }' \
-            && echo "::notice::Coverage ${pct}% meets target ${target}%" \
-            || echo "::warning::Coverage ${pct}% below target ${target}% — add tests to raise floor"
+          threshold=80
+          awk -v p="$pct" -v t="$threshold" 'BEGIN { if (p+0 < t+0) exit 1; exit 0 }' \
+            || { echo "::error::Coverage ${pct}% below threshold ${threshold}%"; exit 1; }
+          echo "::notice::Coverage ${pct}% meets threshold ${threshold}%"
 
       - name: Upload coverage artifact
         if: always()
