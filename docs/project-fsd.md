@@ -19,7 +19,7 @@
 | FR-HOME-002 | Fetch and display a list of "Now Showing" movies using Mocking from IMDB | High | Complete |
 | FR-HOME-003 | Fetch and display a list of "Coming Soon" movies using Mocking from IMDB | High | Complete |
 | FR-HOME-004 | Fetch and display a list of "Recommended" movies using Mocking from IMDB | High | Complete |
-| FR-HOME-005 | Display a bottom navigation bar with Home, Search, Cinemas, Community, Profile | High | Complete |
+| FR-HOME-005 | Display a bottom navigation bar with Home, Explore, Tickets (raised FAB), Saved, Profile | High | Complete |
 
 **Use Case References**: [docs/usecases/home/](usecases/home/)
 
@@ -43,7 +43,8 @@ Each AC follows Given/When/Then. All ACs trace back to a functional requirement 
 | AC-HOME-004-01 | FR-HOME-004 | Given the user opens Home / When `GET /api/v1/movies/recommended` returns `200` (public endpoint) / Then the "Recommended" row renders cards sorted by `matchPercentage` descending | UC-HOME-001 |
 | AC-HOME-004-02 | FR-HOME-004 | Given the recommended endpoint is called / When the response returns `200` with data / Then cards display with rating and matchPercentage | UC-HOME-001 |
 | AC-HOME-004-03 | FR-HOME-004 | Given an authenticated user with no recommendations / When the endpoint returns `200` with empty `data` / Then the "Recommended" section is hidden | UC-HOME-001 |
-| AC-HOME-005-01 | FR-HOME-005 | Given the user is on Home with the Home tab active / When the user taps another tab (Search, Cinemas, Community, Profile) / Then the target tab becomes active, its screen renders, and the previously active tab returns to inactive state | UC-HOME-001 |
+| AC-HOME-005-01 | FR-HOME-005 | Given the user is on Home with the Home tab active / When the user taps another tab (Explore, Tickets, Saved, Profile) / Then the target tab becomes active, its screen renders, and the previously active tab returns to inactive state | UC-HOME-001 |
+| AC-HOME-005-03 | FR-HOME-005 | Given the bottom navigation bar is rendered / When the center slot is shown / Then a raised circular FAB-style "Tickets" tile is displayed overlaying the bar, replacing the standard tab at index 2 | UC-HOME-001 |
 | AC-HOME-005-02 | FR-HOME-005 | Given a deep link targeting `/profile` / When the app is launched cold via the link / Then the Profile tab is rendered as active in the bottom navigation bar | UC-HOME-001 |
 
 ---
@@ -57,7 +58,7 @@ Each AC follows Given/When/Then. All ACs trace back to a functional requirement 
   - Middle 1: Horizontal scrollable list for "Now Showing"
   - Middle 2: Horizontal scrollable list for "Coming Soon"
   - Bottom: Horizontal scrollable list for "Recommended"
-  - Persistent Bottom: Bottom Navigation Bar (Home, Search, Cinemas, Community, Profile)
+  - Persistent Bottom: Bottom Navigation Bar (Home, Explore, Tickets [raised FAB], Saved, Profile)
 - **Interactive Elements**: Banner taps, Movie card taps, Carousel swipe controls, Bottom Navigation tabs.
 - **States**: 
   - Loading: Shimmer effect on banner and movie lists
@@ -73,7 +74,7 @@ flowchart TD
     B --> C{User Interaction}
     C -->|Tap Banner| D[Banner Details/WebView]
     C -->|Tap Movie| E[Movie Details Screen]
-    C -->|Tap Bottom Nav| F[Search / Cinemas / Community / Profile]
+    C -->|Tap Bottom Nav| F[Explore / Tickets / Saved / Profile]
 ```
 
 ## 5. API Contracts
