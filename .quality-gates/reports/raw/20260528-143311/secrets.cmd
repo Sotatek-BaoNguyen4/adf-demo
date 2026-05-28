@@ -1,1 +1,0 @@
-gitleaks detect --log-opts "1fae6733ce3356140fe8c15741a0443634d14a7e..HEAD" --config .quality-gates/gitleaks.toml --report-format json --report-path ".quality-gates/reports/raw/20260528-143311/secrets-report.json" --no-banner

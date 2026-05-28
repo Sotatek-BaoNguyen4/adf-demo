@@ -46,3 +46,8 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Quality Gates — per-run raw outputs (regenerated each run)
+.quality-gates/reports/raw/
+.quality-gates/reports/report-*.md
+.quality-gates/reports/latest-report.md
