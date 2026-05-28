@@ -32,8 +32,8 @@ Each AC follows Given/When/Then. All ACs trace back to a functional requirement 
 | AC ID | FR | Scenario (Given / When / Then) | Linked UC |
 |-------|-----|--------------------------------|-----------|
 | AC-HOME-001-01 | FR-HOME-001 | Given the user opens Home with an active network connection / When `GET /api/v1/home/banners` responds `200` with ≥1 banner / Then the carousel renders the first banner within 500ms of response | UC-HOME-001 |
-| AC-HOME-001-02 | FR-HOME-001 | Given the banner carousel is displayed with ≥2 banners / When 5 seconds elapse without user interaction / Then the carousel auto-advances to the next banner (BR-001) | UC-HOME-001 |
-| AC-HOME-001-03 | FR-HOME-001 | Given the carousel is auto-rotating / When the user performs a horizontal swipe / Then auto-rotation halts immediately and resumes only after 5 seconds of inactivity | UC-HOME-001 |
+| AC-HOME-001-02 | FR-HOME-001 | Given the banner carousel is displayed with ≥2 banners / When 4 seconds elapse without user interaction / Then the carousel auto-advances to the next banner (BR-001) | UC-HOME-001 |
+| AC-HOME-001-03 | FR-HOME-001 | Given the carousel is auto-rotating / When the user performs a horizontal swipe / Then auto-rotation halts immediately and resumes only after 4 seconds of inactivity | UC-HOME-001 |
 | AC-HOME-001-04 | FR-HOME-001 | Given the banners endpoint returns `500` or is unreachable / When the Home screen loads / Then the banner area is replaced with a non-blocking placeholder and an inline retry affordance; the rest of Home continues to render | UC-HOME-001 |
 | AC-HOME-002-01 | FR-HOME-002 | Given the user opens Home / When `GET /api/v1/movies/now-showing?page=1&limit=10` returns `200` with paginated data / Then the "Now Showing" row renders up to 10 cards and exposes `meta.hasNext` for pagination on scroll-end | UC-HOME-001 |
 | AC-HOME-002-02 | FR-HOME-002 | Given the now-showing endpoint returns an empty `data` array / When the Home screen renders / Then the "Now Showing" section displays the "No movies available" placeholder (EF-2) | UC-HOME-001 |
@@ -340,7 +340,7 @@ List endpoints share a common pagination envelope:
 
 | ID | Rule | Applies To | Enforcement |
 |----|------|-----------|-------------|
-| BR-001 | Banners must auto-rotate every 5 seconds | Home Carousel | Client |
+| BR-001 | Banners must auto-rotate every 4 seconds | Home Carousel | Client |
 | BR-002 | "Now Showing", "Coming Soon", and "Recommended" should be cached locally | Home Lists | Client |
 
 ## 8. Non-Functional Requirements

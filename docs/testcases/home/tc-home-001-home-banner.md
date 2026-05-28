@@ -41,7 +41,7 @@
 
 ---
 
-## TC-HOME-001-02: Banner carousel auto-rotates every 5 seconds (BR-001)
+## TC-HOME-001-02: Banner carousel auto-rotates every 4 seconds (BR-001)
 
 - **Type**: Positive
 - **Priority**: High
@@ -53,20 +53,20 @@
   - Banner 1 id: `bnr_01`, Banner 2 id: `bnr_02`, Banner 3 id: `bnr_03`
 - **Steps**:
   1. Open the Home screen and wait for the banner carousel to render banner 1
-  2. Wait 5 seconds without touching the carousel
+  2. Wait 4 seconds without touching the carousel
   3. Observe the carousel
-  4. Wait another 5 seconds
+  4. Wait another 4 seconds
   5. Observe the carousel again
 - **Expected Result**:
-  - After 5 s: carousel auto-advances to banner 2
-  - After another 5 s: carousel auto-advances to banner 3
+  - After 4 s: carousel auto-advances to banner 2
+  - After another 4 s: carousel auto-advances to banner 3
   - Rotation is smooth (no jump/flash)
 - **Actual Result**: __{fill on execution}__
 - **Status**: Pending
 
 ---
 
-## TC-HOME-001-03: Manual swipe halts auto-rotation; resumes after 5 s idle (AF-1)
+## TC-HOME-001-03: Manual swipe halts auto-rotation; resumes after 4 s idle (AF-1)
 
 - **Type**: Positive
 - **Priority**: High
@@ -79,13 +79,13 @@
   1. Wait until banner 1 is displayed and auto-rotation is active
   2. Swipe left on the banner carousel
   3. Observe that banner 2 is shown immediately
-  4. Wait 4 seconds (auto-rotation should NOT fire yet)
-  5. Wait 1 more second (total 5 s idle after swipe)
+  4. Wait 3 seconds (auto-rotation should NOT fire yet)
+  5. Wait 1 more second (total 4 s idle after swipe)
   6. Observe the carousel
 - **Expected Result**:
-  - After swipe: banner 2 is shown; auto-rotation timer resets (does not advance at the original t+5 s)
-  - At 4 s after swipe: still on banner 2
-  - At 5 s after swipe: carousel auto-advances to banner 3 (timer restarted correctly)
+  - After swipe: banner 2 is shown; auto-rotation timer resets (does not advance at the original t+4 s)
+  - At 3 s after swipe: still on banner 2
+  - At 4 s after swipe: carousel auto-advances to banner 3 (timer restarted correctly)
 - **Actual Result**: __{fill on execution}__
 - **Status**: Pending
 
