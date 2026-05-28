@@ -55,7 +55,7 @@ scope:
     - "**/*.test.*"
     - "**/migrations/**"
 thresholds:
-  coverage: 70
+  coverage: 80
   file_max_loc: 200
 
 gitleaks:
