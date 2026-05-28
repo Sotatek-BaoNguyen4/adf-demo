@@ -1,0 +1,1 @@
+trivy fs "." --severity CRITICAL,HIGH --ignore-unfixed --format json --output ".quality-gates/reports/raw/20260528-143311/deps-report-..json" --no-progress --skip-dirs __pycache__,android,build,coverage,dist,doc,ios,lib,migrate_working_dir,migrations,node_modules  --quiet
