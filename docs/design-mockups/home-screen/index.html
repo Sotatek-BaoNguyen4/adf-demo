@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home — ADF Cinema</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./output.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body { font-family: 'Inter', Roboto, sans-serif; background: #0A0A0F; color: #E6E1E5; margin: 0; }
+    .font-display { font-family: 'Righteous', Poppins, sans-serif; }
+    .font-heading { font-family: 'Poppins', Roboto, sans-serif; }
+    .gradient-accent { background: linear-gradient(135deg, #7C3AED 0%, #06B6D4 100%); }
+    .glow-primary { box-shadow: 0 0 20px 0 #D0BCFF40; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    .ripple { position: relative; overflow: hidden; }
+    .ripple:active::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(208,188,255,0.14); border-radius: inherit;
+    }
+    @keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .fade-up { animation: fadeUp 0.45s ease both; }
+    .nav-pill { transition: all 0.2s ease; }
+    .nav-active .nav-pill { background: #4F378B; border-radius: 9999px; }
+    @keyframes progressFill { from { width:0% } to { width:100% } }
+    .bar-active { animation: progressFill 4s linear forwards; }
+    /* M3 filter chip */
+    .chip { transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s; }
+    .chip-active { box-shadow: 0 2px 10px rgba(79,55,139,0.45); }
+  </style>
+</head>
+<body x-data="{
+  activeBanner: 0,
+  banners: [
+    { id:1, title:'Dune: Part Two', genre:'Sci-Fi · Action', rating:'9.1', badge:'NOW SHOWING',
+      img:'https://images.unsplash.com/photo-1635805737707-575885ab0820?w=600&q=80' },
+    { id:2, title:'The Batman Returns', genre:'Action · Crime', rating:'8.7', badge:'NOW SHOWING',
+      img:'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=600&q=80' },
+    { id:3, title:'Inside Out 3', genre:'Animation · Family', rating:'8.4', badge:'COMING SOON',
+      img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&q=80' }
+  ],
+  nowShowing: [
+    { id:1, title:'Dune: Part Two', genre:'Sci-Fi', rating:'9.1', img:'https://images.unsplash.com/photo-1635805737707-575885ab0820?w=300&q=80' },
+    { id:2, title:'The Batman', genre:'Action', rating:'8.7', img:'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=300&q=80' },
+    { id:3, title:'Migration', genre:'Animation', rating:'7.9', img:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=300&q=80' },
+    { id:4, title:'Argylle', genre:'Spy · Comedy', rating:'6.8', img:'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=300&q=80' }
+  ],
+  trending: [
+    { rank:1, title:'Oppenheimer', genre:'Drama · History', rating:'9.0', img:'https://images.unsplash.com/photo-1501167786227-4cba60f6d58f?w=300&q=80', views:'2.4M' },
+    { rank:2, title:'Killers of the Flower Moon', genre:'Crime', rating:'8.8', img:'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=300&q=80', views:'1.9M' },
+    { rank:3, title:'Society of the Snow', genre:'Survival', rating:'8.3', img:'https://images.unsplash.com/photo-1511300636408-a63a89df3482?w=300&q=80', views:'1.5M' }
+  ],
+  activeCategory: 'All',
+  progress: 0,
+  _timer: null,
+  startProgress() {
+    this.progress = 0;
+    clearInterval(this._timer);
+    this._timer = setInterval(() => {
+      this.progress += 2.5;
+      if (this.progress >= 100) {
+        this.progress = 0;
+        this.activeBanner = (this.activeBanner + 1) % this.banners.length;
+      }
+    }, 100);
+  }
+}" x-init="startProgress()"
+   style="min-height:100vh; overflow-x:hidden;">
+
+  <!-- STATUS BAR (decorative) -->
+  <div style="position:fixed;top:0;left:0;right:0;z-index:60;display:flex;justify-content:space-between;align-items:center;padding:10px 20px 4px;pointer-events:none;">
+    <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);">9:41</span>
+    <div style="display:flex;gap:4px;align-items:center;">
+      <svg width="16" height="12" viewBox="0 0 24 16"><rect x="0" y="4" width="5" height="12" rx="1.5" fill="rgba(255,255,255,0.7)"/><rect x="7" y="2" width="5" height="14" rx="1.5" fill="rgba(255,255,255,0.7)"/><rect x="14" y="0" width="5" height="16" rx="1.5" fill="rgba(255,255,255,0.7)"/><rect x="21" y="0" width="3" height="16" rx="1.5" fill="rgba(255,255,255,0.25)"/></svg>
+      <svg width="16" height="14" viewBox="0 0 24 18" fill="none"><path d="M1 4C5.5-.5 18.5-.5 23 4M4.5 7.5C7.5 4.5 16.5 4.5 19.5 7.5M8 11c2-2 6-2 8 0M12 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <svg width="25" height="12" viewBox="0 0 26 13"><rect x="0.5" y="0.5" width="21" height="12" rx="3" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)"/><rect x="1.5" y="1.5" width="17" height="10" rx="2.5" fill="rgba(255,255,255,0.9)"/><rect x="23" y="3.5" width="2.5" height="6" rx="1.25" fill="rgba(255,255,255,0.4)"/></svg>
+    </div>
+  </div>
+
+  <!-- TOP APP BAR -->
+  <header style="position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:36px 16px 12px;background:linear-gradient(180deg,#0A0A0F 0%,#0A0A0Fdd 70%,transparent 100%);">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="gradient-accent" style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <span class="font-display" style="font-size:15px;color:white;line-height:1;">A</span>
+      </div>
+      <span class="font-display" style="font-size:18px;letter-spacing:0.5px;color:#D0BCFF;">ADF Cinema</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="ripple" aria-label="Notifications"
+              style="position:relative;width:40px;height:40px;border-radius:50%;background:#1A1A24;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E6E1E5" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span style="position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:#F97316;border:1.5px solid #0A0A0F;"></span>
+      </button>
+      <a href="./profile.html" style="width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid #D0BCFF44;display:block;cursor:pointer;">
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&q=80" alt="Profile" style="width:100%;height:100%;object-fit:cover;">
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN SCROLL CONTENT -->
+  <main style="padding-bottom:100px;">
+
+    <!-- HERO BANNER -->
+    <div style="position:relative;width:100%;height:480px;overflow:hidden;">
+      <template x-for="(b,i) in banners" :key="b.id">
+        <div style="position:absolute;inset:0;" :style="'transition:opacity 0.7s ease;opacity:'+(activeBanner===i?1:0)+';'">
+          <img :src="b.img" :alt="b.title" style="width:100%;height:100%;object-fit:cover;">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,15,0.15) 0%,rgba(10,10,15,0.6) 50%,#0A0A0F 100%);"></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,15,0.7) 0%,transparent 60%);"></div>
+        </div>
+      </template>
+
+      <!-- Story-style progress bars — JS-driven fill, restart on slide change -->
+      <div style="position:absolute;top:86px;left:16px;right:16px;display:flex;gap:4px;z-index:10;">
+        <template x-for="(b,i) in banners" :key="'pb'+i">
+          <button @click="activeBanner=i; startProgress()"
+                  style="flex:1;height:2px;border-radius:9999px;padding:0;border:none;background:rgba(255,255,255,0.18);overflow:hidden;cursor:pointer;"
+                  :aria-label="'Slide '+(i+1)">
+            <div :style="
+                   i < activeBanner  ? 'width:100%;background:rgba(255,255,255,0.85);' :
+                   i === activeBanner ? 'width:'+progress+'%;background:rgba(255,255,255,0.85);' :
+                                        'width:0%;'"
+                 style="height:100%;border-radius:9999px;transition:none;"></div>
+          </button>
+        </template>
+      </div>
+
+      <!-- Banner text content -->
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:0 20px 20px;">
+        <template x-for="(b,i) in banners" :key="'t'+b.id">
+          <div x-show="activeBanner===i"
+               x-transition:enter="transition duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+            <span style="display:inline-block;padding:3px 10px;border-radius:9999px;font-size:10px;font-weight:700;margin-bottom:8px;letter-spacing:0.8px;font-family:'Poppins',sans-serif;"
+                  :style="b.badge==='NOW SHOWING'?'background:#4F378B;color:#EADDFF;':'background:#00565A;color:#A2EFF8;'"
+                  x-text="b.badge"></span>
+            <h1 class="font-heading" style="font-size:28px;font-weight:700;margin:0 0 4px;color:white;line-height:1.2;" x-text="b.title"></h1>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+              <span style="font-size:13px;color:#CAC4D0;" x-text="b.genre"></span>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span style="font-size:13px;font-weight:600;color:#FBBF24;" x-text="b.rating"></span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;">
+              <a href="./movie-detail.html" class="ripple"
+                 style="flex:1;padding:12px 0;border-radius:14px;text-align:center;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;background:#D0BCFF;color:#381E72;text-decoration:none;cursor:pointer;display:block;">
+                Book Tickets
+              </a>
+              <button class="ripple"
+                      style="display:flex;align-items:center;gap:6px;padding:12px 16px;border-radius:14px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:500;background:#1A1A24;color:#E6E1E5;border:1px solid #49454F;cursor:pointer;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5,3 19,12 5,21"/></svg>
+                Trailer
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+    </div>
+
+    <!-- CATEGORIES — Pill chips, gradient active, scroll fade hint -->
+    <div style="position:relative;padding:14px 0 10px;">
+      <div class="scrollbar-hide" style="display:flex;gap:8px;overflow-x:auto;padding:0 16px 0;white-space:nowrap;">
+        <template x-for="cat in ['All','Action','Sci-Fi','Drama','Horror','Animation','Comedy','Romance']" :key="cat">
+          <button @click="activeCategory=cat"
+                  :style="activeCategory===cat
+                    ? 'background:linear-gradient(135deg,#7C3AED,#A78BFA);color:#fff;box-shadow:0 2px 12px rgba(124,58,237,0.5);'
+                    : 'background:rgba(255,255,255,0.07);color:#938F99;'"
+                  style="flex:none;padding:0 16px;height:34px;border-radius:9999px;font-size:13px;font-family:\'Poppins\',sans-serif;font-weight:500;border:none;cursor:pointer;transition:all 0.2s ease;"
+                  x-text="cat"></button>
+        </template>
+        <!-- trailing spacer keeps last chip clear of the fade -->
+        <div style="flex:none;width:44px;"></div>
+      </div>
+      <!-- right-edge fade — pointer-events:none so touch scroll passes through -->
+      <div style="position:absolute;right:0;top:0;bottom:0;width:56px;background:linear-gradient(to right,transparent,#0A0A0F);pointer-events:none;"></div>
+    </div>
+
+    <!-- NOW SHOWING -->
+    <section class="fade-up" style="margin-bottom:28px;margin-top:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px 12px;">
+        <h2 class="font-heading" style="font-size:16px;font-weight:600;color:#E6E1E5;margin:0;">Now Showing</h2>
+        <a href="./search.html" style="font-size:13px;font-weight:500;color:#D0BCFF;text-decoration:none;cursor:pointer;">See All</a>
+      </div>
+      <div class="scrollbar-hide" style="display:flex;gap:12px;padding:0 16px;overflow-x:auto;padding-bottom:8px;">
+        <template x-for="m in nowShowing" :key="m.id">
+          <a href="./movie-detail.html" style="flex:none;width:128px;text-decoration:none;cursor:pointer;">
+            <div style="position:relative;width:128px;height:188px;border-radius:16px;overflow:hidden;margin-bottom:8px;border:1px solid #49454F;">
+              <img :src="m.img" :alt="m.title" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s;">
+              <div style="position:absolute;top:8px;left:8px;display:flex;align-items:center;gap:3px;padding:3px 7px;border-radius:9999px;background:rgba(10,10,15,0.8);">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span style="font-size:11px;font-weight:600;color:#FBBF24;" x-text="m.rating"></span>
+              </div>
+            </div>
+            <p class="font-heading" style="font-size:12px;font-weight:600;color:#E6E1E5;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" x-text="m.title"></p>
+            <p style="font-size:11px;color:#938F99;margin:0;" x-text="m.genre"></p>
+          </a>
+        </template>
+      </div>
+    </section>
+
+    <!-- TRENDING THIS WEEK -->
+    <section style="padding:0 16px;margin-bottom:28px;" class="fade-up">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h2 class="font-heading" style="font-size:16px;font-weight:600;color:#E6E1E5;margin:0;">Trending This Week</h2>
+        <span style="font-size:11px;padding:3px 10px;border-radius:9999px;background:#6B3D00;color:#FDB97D;font-family:'Poppins',sans-serif;">HOT</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <template x-for="m in trending" :key="m.rank">
+          <a href="./movie-detail.html" class="ripple"
+             style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:#1A1A24;border:1px solid #49454F;text-decoration:none;cursor:pointer;">
+            <span class="font-heading"
+                  :style="m.rank===1?'background:#D0BCFF;color:#381E72;':'background:#2D2D3D;color:#938F99;'"
+                  style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;"
+                  x-text="'#'+m.rank"></span>
+            <div style="width:48px;height:64px;border-radius:10px;overflow:hidden;flex-shrink:0;">
+              <img :src="m.img" :alt="m.title" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+            <div style="flex:1;min-width:0;">
+              <p class="font-heading" style="font-size:13px;font-weight:600;color:#E6E1E5;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" x-text="m.title"></p>
+              <p style="font-size:12px;color:#938F99;margin:0 0 6px;" x-text="m.genre"></p>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="display:flex;align-items:center;gap:3px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#FBBF24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span style="font-size:12px;color:#FBBF24;" x-text="m.rating"></span>
+                </div>
+                <span style="font-size:11px;color:#938F99;" x-text="m.views+' views'"></span>
+              </div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#49454F" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+          </a>
+        </template>
+      </div>
+    </section>
+
+    <!-- PROMO BANNER -->
+    <section style="padding:0 16px;margin-bottom:28px;">
+      <div style="position:relative;padding:20px;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,#4F378B 0%,#00565A 100%);">
+        <div style="position:absolute;right:-12px;top:-12px;width:88px;height:88px;border-radius:50%;background:#D0BCFF;opacity:0.15;"></div>
+        <div style="position:absolute;right:16px;bottom:-8px;width:56px;height:56px;border-radius:50%;background:#67E8F9;opacity:0.1;"></div>
+        <div style="position:relative;">
+          <span style="display:inline-block;font-size:10px;font-family:'Poppins',sans-serif;font-weight:700;letter-spacing:0.8px;padding:3px 10px;border-radius:9999px;margin-bottom:8px;background:rgba(208,188,255,0.2);color:#EADDFF;">LIMITED OFFER</span>
+          <h3 class="font-heading" style="font-size:20px;font-weight:700;color:white;margin:0 0 4px;">Student Discount</h3>
+          <p style="font-size:13px;color:#A2EFF8;margin:0 0 16px;line-height:1.5;">Get 30% off on all movies<br>with valid student ID</p>
+          <button class="ripple"
+                  style="padding:10px 20px;border-radius:9999px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;background:#D0BCFF;color:#381E72;border:none;cursor:pointer;">
+            Claim Now
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMING SOON -->
+    <section class="fade-up" style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px 12px;">
+        <h2 class="font-heading" style="font-size:16px;font-weight:600;color:#E6E1E5;margin:0;">Coming Soon</h2>
+        <a href="./search.html" style="font-size:13px;font-weight:500;color:#D0BCFF;text-decoration:none;cursor:pointer;">See All</a>
+      </div>
+      <div class="scrollbar-hide" style="display:flex;gap:12px;padding:0 16px;overflow-x:auto;padding-bottom:8px;">
+        <template x-for="(m,i) in [
+          {title:'Inside Out 3',genre:'Animation',date:'Jun 2026',img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=300&q=80'},
+          {title:'Avengers 5',genre:'Action',date:'Jul 2026',img:'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=300&q=80'},
+          {title:'Interstellar 2',genre:'Sci-Fi',date:'Aug 2026',img:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=300&q=80'}
+        ]" :key="i">
+          <div style="flex:none;width:148px;cursor:pointer;">
+            <div style="position:relative;width:148px;height:210px;border-radius:16px;overflow:hidden;margin-bottom:8px;border:1px solid #49454F;">
+              <img :src="m.img" :alt="m.title" style="width:100%;height:100%;object-fit:cover;">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(10,10,15,0.95) 100%);"></div>
+              <div style="position:absolute;bottom:10px;left:10px;">
+                <span style="font-size:11px;font-family:'Poppins',sans-serif;font-weight:600;padding:3px 8px;border-radius:6px;background:#00565A;color:#A2EFF8;" x-text="m.date"></span>
+              </div>
+            </div>
+            <p class="font-heading" style="font-size:12px;font-weight:600;color:#E6E1E5;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" x-text="m.title"></p>
+            <p style="font-size:11px;color:#938F99;margin:0;" x-text="m.genre"></p>
+          </div>
+        </template>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav style="position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;justify-content:space-around;align-items:center;padding:8px 8px 24px;background:rgba(19,19,26,0.92);backdrop-filter:blur(20px);border-top:1px solid #49454F;">
+    <!-- Home -->
+    <a href="./index.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;cursor:pointer;">
+      <div class="nav-active nav-pill" style="width:64px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:9999px;background:#4F378B;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#D0BCFF"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </div>
+      <span style="font-size:11px;font-family:'Poppins',sans-serif;font-weight:500;color:#D0BCFF;">Home</span>
+    </a>
+    <!-- Search -->
+    <a href="./search.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;cursor:pointer;">
+      <div class="nav-pill" style="width:64px;height:32px;display:flex;align-items:center;justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#938F99" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+      <span style="font-size:11px;font-family:'Poppins',sans-serif;font-weight:500;color:#938F99;">Explore</span>
+    </a>
+    <!-- Tickets FAB -->
+    <a href="./movie-detail.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;cursor:pointer;margin-top:-20px;">
+      <div class="glow-primary" style="width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#7C3AED,#A78BFA);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M20 12c0-1.1-.9-2-2-2V7c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v3c1.1 0 2 .9 2 2s-.9 2-2 2v3c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-3c-1.1 0-2-.9-2-2zm-2 4.5H4v-2.22c1.19-.69 2-1.99 2-3.28S5.19 8.41 4 7.72V5.5h14v2.22C16.81 8.41 16 9.71 16 11s.81 2.59 2 3.28v2.22zM9 15l1-3-1-3 3 1 3-1-1 3 1 3-3-1-3 1z"/></svg>
+      </div>
+      <span style="font-size:11px;font-family:'Poppins',sans-serif;font-weight:500;color:#938F99;">Tickets</span>
+    </a>
+    <!-- Saved -->
+    <a href="#" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;cursor:pointer;">
+      <div class="nav-pill" style="width:64px;height:32px;display:flex;align-items:center;justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#938F99" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+      </div>
+      <span style="font-size:11px;font-family:'Poppins',sans-serif;font-weight:500;color:#938F99;">Saved</span>
+    </a>
+    <!-- Profile -->
+    <a href="./profile.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;cursor:pointer;">
+      <div class="nav-pill" style="width:64px;height:32px;display:flex;align-items:center;justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#938F99" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <span style="font-size:11px;font-family:'Poppins',sans-serif;font-weight:500;color:#938F99;">Profile</span>
+    </a>
+  </nav>
+
+</body>
+</html>

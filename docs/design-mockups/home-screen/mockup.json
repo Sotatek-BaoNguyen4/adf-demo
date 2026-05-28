@@ -1,0 +1,55 @@
+{
+  "name": "home-screen",
+  "description": "ADF Cinema home screen — Material Design 3, dark cinematic, youth-focused (Gen-Z 16-28)",
+  "created": "2026-05-27",
+  "updated": "2026-05-27",
+  "themes": [],
+  "pages": [
+    {
+      "file": "index.html",
+      "title": "Index",
+      "description": "",
+      "navOrder": 1
+    },
+    {
+      "file": "movie-detail.html",
+      "title": "Movie Detail",
+      "description": "",
+      "navOrder": 2
+    },
+    {
+      "file": "search.html",
+      "title": "Search",
+      "description": "",
+      "navOrder": 3
+    },
+    {
+      "file": "profile.html",
+      "title": "Profile",
+      "description": "",
+      "navOrder": 4
+    }
+  ],
+  "navigation": {
+    "index.html": [
+      "movie-detail.html",
+      "search.html",
+      "profile.html"
+    ],
+    "movie-detail.html": [
+      "index.html",
+      "search.html",
+      "profile.html"
+    ],
+    "search.html": [
+      "index.html",
+      "movie-detail.html",
+      "profile.html"
+    ],
+    "profile.html": [
+      "index.html",
+      "movie-detail.html",
+      "search.html"
+    ]
+  }
+}

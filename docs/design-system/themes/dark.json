@@ -1,0 +1,100 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$metadata": {
+    "theme": "dark",
+    "description": "M3 dark scheme — cinematic deep black, violet tonal palette (default)"
+  },
+  "$extensions": {
+    "theme": { "name": "dark" }
+  },
+
+  "color": {
+    "primary": {
+      "default": { "$type": "color", "$value": "#D0BCFF" },
+      "on": { "$type": "color", "$value": "#381E72" },
+      "container": { "$type": "color", "$value": "#4F378B" },
+      "on-container": { "$type": "color", "$value": "#EADDFF" }
+    },
+    "secondary": {
+      "default": { "$type": "color", "$value": "#67E8F9" },
+      "on": { "$type": "color", "$value": "#003738" },
+      "container": { "$type": "color", "$value": "#00565A" },
+      "on-container": { "$type": "color", "$value": "#A2EFF8" }
+    },
+    "tertiary": {
+      "default": { "$type": "color", "$value": "#FDB97D" },
+      "on": { "$type": "color", "$value": "#4A2800" },
+      "container": { "$type": "color", "$value": "#6B3D00" },
+      "on-container": { "$type": "color", "$value": "#FFDCBE" }
+    },
+    "error": {
+      "default": { "$type": "color", "$value": "#FFB4AB" },
+      "on": { "$type": "color", "$value": "#690005" },
+      "container": { "$type": "color", "$value": "#93000A" },
+      "on-container": { "$type": "color", "$value": "#FFDAD6" }
+    },
+    "surface": {
+      "default": { "$type": "color", "$value": "#0A0A0F" },
+      "dim": { "$type": "color", "$value": "#070B14" },
+      "bright": { "$type": "color", "$value": "#1A1A24" },
+      "container-lowest": { "$type": "color", "$value": "#050508" },
+      "container-low": { "$type": "color", "$value": "#13131A" },
+      "container": { "$type": "color", "$value": "#1A1A24" },
+      "container-high": { "$type": "color", "$value": "#212130" },
+      "container-highest": { "$type": "color", "$value": "#2D2D3D" }
+    },
+    "on-surface": {
+      "default": { "$type": "color", "$value": "#E6E1E5" },
+      "variant": { "$type": "color", "$value": "#CAC4D0" }
+    },
+    "outline": {
+      "default": { "$type": "color", "$value": "#938F99" },
+      "variant": { "$type": "color", "$value": "#49454F" }
+    },
+    "inverse": {
+      "surface": { "$type": "color", "$value": "#E6E1E5" },
+      "on-surface": { "$type": "color", "$value": "#313033" },
+      "primary": { "$type": "color", "$value": "#7C3AED" }
+    },
+    "scrim": { "$type": "color", "$value": "#000000" },
+    "shadow": { "$type": "color", "$value": "#000000" },
+    "background": {
+      "app": { "$type": "color", "$value": "#0A0A0F" },
+      "surface": { "$type": "color", "$value": "#13131A" },
+      "elevated": { "$type": "color", "$value": "#1A1A24" },
+      "overlay": { "$type": "color", "$value": "#00000080" }
+    },
+    "text": {
+      "primary": { "$type": "color", "$value": "#E6E1E5" },
+      "secondary": { "$type": "color", "$value": "#CAC4D0" },
+      "muted": { "$type": "color", "$value": "#938F99" },
+      "inverse": { "$type": "color", "$value": "#313033" },
+      "on-primary": { "$type": "color", "$value": "#381E72" }
+    },
+    "border": {
+      "default": { "$type": "color", "$value": "#49454F" },
+      "focus": { "$type": "color", "$value": "#D0BCFF" },
+      "strong": { "$type": "color", "$value": "#938F99" }
+    },
+    "interactive": {
+      "primary": { "$type": "color", "$value": "#D0BCFF" },
+      "primary-hover": { "$type": "color", "$value": "#E8DEF8" },
+      "primary-pressed": { "$type": "color", "$value": "#B69DF8" },
+      "primary-disabled": { "$type": "color", "$value": "#D0BCFF40" },
+      "secondary": { "$type": "color", "$value": "#67E8F9" },
+      "secondary-hover": { "$type": "color", "$value": "#A2EFF8" },
+      "destructive": { "$type": "color", "$value": "#FFB4AB" }
+    },
+    "badge": {
+      "now-showing": { "$type": "color", "$value": "#4F378B" },
+      "coming-soon": { "$type": "color", "$value": "#00565A" },
+      "rating": { "$type": "color", "$value": "#FBBF24" },
+      "new": { "$type": "color", "$value": "#22C55E" }
+    },
+    "nav": {
+      "background": { "$type": "color", "$value": "#13131AE6" },
+      "active": { "$type": "color", "$value": "#D0BCFF" },
+      "inactive": { "$type": "color", "$value": "#938F99" }
+    }
+  }
+}
