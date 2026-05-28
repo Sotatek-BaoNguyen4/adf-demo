@@ -1,0 +1,20 @@
+[
+  {
+    "id": "m5",
+    "title": "Avatar: New World",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
+    "expectedReleaseDate": "2027-01-15"
+  },
+  {
+    "id": "m6",
+    "title": "Black Panther: Wakanda Forever 2",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/sv1xJUazXeYqALzczSZ3O6nkH75.jpg",
+    "expectedReleaseDate": "2027-03-20"
+  },
+  {
+    "id": "m7",
+    "title": "Mission Impossible: Final Reckoning II",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/NNxYkU70HPurnNCSiCjYAmacwm.jpg",
+    "expectedReleaseDate": "2026-12-25"
+  }
+]

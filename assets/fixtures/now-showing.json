@@ -1,0 +1,30 @@
+[
+  {
+    "id": "m1",
+    "title": "Dune Part Three",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+    "rating": 8.4,
+    "releaseDate": "2026-11-20"
+  },
+  {
+    "id": "m2",
+    "title": "The Martian Returns",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/73WiP7qwfrBWEcFsarDSe6S692q.jpg",
+    "rating": 7.9,
+    "releaseDate": "2026-09-12"
+  },
+  {
+    "id": "m3",
+    "title": "Interstellar 2",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+    "rating": 9.1,
+    "releaseDate": "2026-07-04"
+  },
+  {
+    "id": "m4",
+    "title": "Oppenheimer: Legacy",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+    "rating": 8.7,
+    "releaseDate": "2026-06-01"
+  }
+]

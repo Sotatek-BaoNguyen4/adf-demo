@@ -1,0 +1,29 @@
+[
+  {
+    "id": "b1",
+    "imageUrl": "https://image.tmdb.org/t/p/w1280/eZ239CUp1d6OryZEBPnO2n87gMG.jpg",
+    "targetUrl": "adf://movie/m1",
+    "title": "Featured: Dune Part Three",
+    "genre": "Sci-Fi / Adventure",
+    "rating": 8.9,
+    "badgeKind": "nowShowing"
+  },
+  {
+    "id": "b2",
+    "imageUrl": "https://image.tmdb.org/t/p/w1280/lzMS0CI3FLQYC5EgJoWeIaEt0lm.jpg",
+    "targetUrl": "adf://movie/m2",
+    "title": "Featured: The Martian Returns",
+    "genre": "Sci-Fi / Drama",
+    "rating": 8.4,
+    "badgeKind": "comingSoon"
+  },
+  {
+    "id": "b3",
+    "imageUrl": "https://image.tmdb.org/t/p/w1280/xJHokMbljvjADYdit5fK5VQsXEG.jpg",
+    "targetUrl": "adf://movie/m3",
+    "title": "Featured: Interstellar 2",
+    "genre": "Sci-Fi / Thriller",
+    "rating": 9.1,
+    "badgeKind": "nowShowing"
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "m1",
+    "title": "Dune Part Three",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+    "rating": 8.4,
+    "matchPercentage": 97,
+    "rank": 1,
+    "views": "2.4M"
+  },
+  {
+    "id": "m3",
+    "title": "Interstellar 2",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+    "rating": 9.1,
+    "matchPercentage": 95,
+    "rank": 2,
+    "views": "1.9M"
+  },
+  {
+    "id": "m4",
+    "title": "Oppenheimer: Legacy",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+    "rating": 8.7,
+    "matchPercentage": 91,
+    "rank": 3,
+    "views": "1.5M"
+  }
+]
