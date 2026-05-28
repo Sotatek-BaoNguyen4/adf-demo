@@ -316,6 +316,184 @@
 
 ---
 
+## TC-HOME-001-15: Network timeout maps to NetworkFailure with offline message
+
+- **Type**: Negative
+- **Priority**: High
+- **Method**: Unit/Integration (repository)
+- **Precondition**:
+  - Dio client configured; mock interceptor delays banners response beyond connect/receive timeout threshold
+- **Test Data**:
+  - `DioException(type: DioExceptionType.connectionTimeout | receiveTimeout | sendTimeout)` from `home_remote_source.fetchBanners()`
+- **Steps**:
+  1. Configure mock to throw `DioException` with each timeout type
+  2. Invoke `HomeRepositoryImpl.fetchBanners()`
+  3. Catch and inspect the thrown failure
+- **Expected Result**:
+  - Repository throws `NetworkFailure` (not raw `DioException`)
+  - Failure carries the offline/timeout message; no stack trace leaks to UI
+  - Same behavior for now-showing, coming-soon, recommended endpoints
+- **Actual Result**: __{fill on execution}__
+- **Status**: Pending
+
+---
+
+## TC-HOME-001-16: Malformed JSON body (non-list) surfaces as ParseFailure
+
+- **Type**: Negative
+- **Priority**: High
+- **Method**: Unit/Integration (repository)
+- **Precondition**:
+  - Mock fixture for `/api/v1/home/banners` returns a JSON object instead of a JSON array (`{"foo": "bar"}`)
+- **Test Data**:
+  - Response body: `{"unexpected": "shape"}` with HTTP 200
+- **Steps**:
+  1. Configure mock interceptor to return non-list body
+  2. Invoke `HomeRepositoryImpl.fetchBanners()`
+- **Expected Result**:
+  - `home_remote_source` throws `FormatException("Expected JSON array but got non-list body")`
+  - Repository maps it to `ParseFailure`
+  - UI shows error placeholder (not crash, not raw exception text)
+- **Actual Result**: __{fill on execution}__
+- **Status**: Pending
+
+---
+
+## TC-HOME-001-17: DTO schema drift (missing required field) caught as ParseFailure
+
+- **Type**: Negative
+- **Priority**: High
+- **Method**: Unit (repository)
+- **Precondition**:
+  - Mock fixture returns banner array where one item is missing the required `id` field
+- **Test Data**:
+  - `[{"imageUrl": "https://x/1.jpg", "title": "Bad Banner"}, ...]`  (no `id`)
+- **Steps**:
+  1. Configure mock with malformed banner item
+  2. Invoke `HomeRepositoryImpl.fetchBanners()`
+- **Expected Result**:
+  - `freezed`/`json_serializable` throws `CheckedFromJsonException`
+  - Repository maps to `ParseFailure`
+  - Error is logged; UI shows banner placeholder
+  - App does not crash; other sections still render
+- **Actual Result**: __{fill on execution}__
+- **Status**: Pending
+
+---
+
+## TC-HOME-001-18: HTTP 404 on any home endpoint surfaces as NetworkFailure
+
+- **Type**: Negative
+- **Priority**: Medium
+- **Method**: Unit (repository)
+- **Precondition**:
+  - Mock interceptor returns `404 NOT_FOUND` for `/api/v1/home/banners`
+- **Test Data**:
+  - `DioException(type: DioExceptionType.badResponse, response.statusCode: 404)`
+- **Steps**:
+  1. Configure mock with 404
+  2. Invoke `HomeRepositoryImpl.fetchBanners()`
+  3. Repeat for now-showing, coming-soon, recommended
+- **Expected Result**:
+  - Repository throws `NetworkFailure` for each endpoint
+  - UI shows the same non-blocking placeholder + retry as the 500 path
+- **Actual Result**: __{fill on execution}__
+- **Status**: Pending
+
+---
+
+## TC-HOME-001-19: Single-banner carousel does not rotate and shows 1 progress bar
+
+- **Type**: Edge
+- **Priority**: Medium
+- **Method**: UI (widget test)
+- **Precondition**:
+  - `bannersProvider` returns exactly 1 banner
+- **Test Data**:
+  - `[Banner(id: 'b1', title: 'Only One', ...)]`
+- **Steps**:
+  1. Pump `BannerSection` with single-banner override
+  2. Wait 8 seconds via `tester.pump(Duration(seconds: 8))`
+  3. Inspect rendered title and progress bar count
+- **Expected Result**:
+  - "Only One" remains displayed (no advance attempt)
+  - Exactly 1 progress bar rendered (`Slide 1`)
+  - No flicker, no overflow, no exception
+- **Actual Result**: __{fill on execution}__
+- **Status**: Pending
+
+---
+
+## TC-HOME-001-20: App backgrounded mid-rotation pauses; resumes correctly on resume
+
+- **Type**: Edge
+- **Priority**: Medium
+- **Method**: UI (widget test with lifecycle)
+- **Precondition**:
+  - Home screen displayed with carousel on banner 1; auto-rotation running
+- **Test Data**:
+  - 3-banner fixture
+- **Steps**:
+  1. Pump `BannerSection`; advance 2 s (still on banner 1)
+  2. Simulate app paused: dispatch `AppLifecycleState.paused` via `WidgetsBinding.instance.handleAppLifecycleStateChanged`
+  3. Advance 10 s while paused
+  4. Dispatch `AppLifecycleState.resumed`
+  5. Advance 4 s
+- **Expected Result**:
+  - During pause: no `setState` calls; controller halted; still on banner 1
+  - After resume + 4 s: carousel advances to banner 2 (timer not double-fired)
+  - No memory leak: controller still attached, no AnimationController disposal warnings
+- **Actual Result**: __{fill on execution}__
+- **Status**: Pending
+
+---
+
+## TC-HOME-001-21: Last page reached — pagination stops, no error on further scroll
+
+- **Type**: Edge
+- **Priority**: Medium
+- **Method**: UI
+- **Precondition**:
+  - Now-showing has 2 pages total; page 1 returns `meta.hasNext: true`, page 2 returns `meta.hasNext: false`
+- **Test Data**:
+  - Page 1: 10 movies, hasNext true; Page 2: 5 movies, hasNext false
+- **Steps**:
+  1. Load Home; scroll to end of now-showing → triggers page 2
+  2. After page 2 loaded, scroll to end again
+  3. Observe scroll-end behavior
+- **Expected Result**:
+  - Page 2 appended after page 1 (total 15 cards)
+  - Further scroll-end does NOT fire another network request
+  - No loading spinner stuck at end of row
+  - No error toast
+- **Actual Result**: __{fill on execution}__
+- **Status**: Pending
+
+---
+
+## TC-HOME-001-22: Broken banner image URL falls back gracefully
+
+- **Type**: Edge
+- **Priority**: Medium
+- **Method**: UI
+- **Precondition**:
+  - Banner fixture contains an `imageUrl` that returns 404 or unreachable host
+- **Test Data**:
+  - `Banner(id: 'b1', imageUrl: 'https://invalid.example.com/missing.jpg', title: 'Broken Image')`
+- **Steps**:
+  1. Pump BannerSection with the broken-image banner
+  2. Wait for image load attempt to fail
+  3. Inspect rendered carousel slot
+- **Expected Result**:
+  - Slot renders a fallback (placeholder color, icon, or shimmer continuation)
+  - Title and CTA overlay still render on top
+  - Rotation timer is unaffected; advances normally
+  - No red error widget; no `NetworkImage` exception bubbling to user
+- **Actual Result**: __{fill on execution}__
+- **Status**: Pending
+
+---
+
 ## TC-HOME-001-14: Recommended cache is private — must not be served to a different user
 
 - **Type**: Security
